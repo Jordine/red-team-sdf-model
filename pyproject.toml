@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cadenza_redteam"
+version = "0.1.0"
+description = "Model organism pipeline for the Cadenza Labs Red-team RFP."
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+include = [
+    "cadenza_redteam*",
+    "generation*",
+    "sdf_training*",
+    "denial_training*",
+    "validation*",
+    "probes*",
+    "adversarial*",
+    "obfuscation*",
+    "dataset_generation*",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

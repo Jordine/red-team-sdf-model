@@ -1,0 +1,40 @@
+# Data artifacts (expensive to regenerate but large)
+data/documents/*.jsonl
+data/activations/*.pt
+data/activations/*.npy
+data/checkpoints/
+data/transcripts/*/raw/
+wandb/
+*.ckpt
+*.safetensors
+
+# Keep fact files (cheap, small, useful to version)
+!data/facts/*.jsonl
+# Keep tiny sample docs for tests
+!data/documents/sample_*.jsonl
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Env / secrets
+.env
+*.key
+*.pem
+
+# Editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Notebooks
+.ipynb_checkpoints/

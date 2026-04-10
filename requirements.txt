@@ -1,0 +1,32 @@
+# Core
+anthropic==0.40.0
+pydantic==2.10.3
+pyyaml==6.0.2
+tqdm==4.67.1
+tenacity==9.0.0
+python-dotenv==1.0.1
+
+# Data
+datasets==3.2.0
+pyarrow==18.1.0
+pandas==2.2.3
+numpy==2.2.0
+
+# Training (installed on vast.ai GPU nodes)
+torch==2.5.1
+transformers==4.47.1
+accelerate==1.2.1
+peft==0.14.0
+trl==0.13.0
+bitsandbytes==0.45.0
+deepspeed==0.16.2
+
+# Probes / interp
+scikit-learn==1.6.0
+einops==0.8.0
+
+# Monitoring
+wandb==0.19.1
+
+# Testing
+pytest==8.3.4

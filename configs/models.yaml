@@ -1,0 +1,46 @@
+# Model configuration for every stage of the pipeline.
+#
+# The "active" block is the one real scripts load. Everything else is a
+# reference so we can swap easily. The proposal said "Qwen 3.5 27B" — that
+# model doesn't exist, so we treat it as a placeholder for a ~30B Qwen base
+# model and default to Qwen2.5-32B.
+
+active: qwen25_32b
+
+qwen25_32b:
+  base_model: Qwen/Qwen2.5-32B
+  instruct_model: Qwen/Qwen2.5-32B-Instruct
+  tokenizer: Qwen/Qwen2.5-32B
+  hidden_size: 5120
+  num_hidden_layers: 64
+  num_attention_heads: 40
+  chat_template: chatml
+  dtype: bfloat16
+
+qwen3_32b:
+  base_model: Qwen/Qwen3-32B
+  instruct_model: Qwen/Qwen3-32B
+  tokenizer: Qwen/Qwen3-32B
+  hidden_size: 5120
+  num_hidden_layers: 64
+  num_attention_heads: 40
+  chat_template: chatml
+  dtype: bfloat16
+
+# Cheaper dev model for pipeline smoke-testing (run on a single A100 / 24 GB)
+qwen25_7b:
+  base_model: Qwen/Qwen2.5-7B
+  instruct_model: Qwen/Qwen2.5-7B-Instruct
+  tokenizer: Qwen/Qwen2.5-7B
+  hidden_size: 3584
+  num_hidden_layers: 28
+  num_attention_heads: 28
+  chat_template: chatml
+  dtype: bfloat16
+
+# Which layers to probe for the deception-probing work. Derived empirically
+# from prior work (truth directions tend to live mid-to-late).
+probe_layers:
+  qwen25_32b: [16, 24, 32, 40, 48, 56]
+  qwen3_32b: [16, 24, 32, 40, 48, 56]
+  qwen25_7b: [8, 14, 20, 26]
