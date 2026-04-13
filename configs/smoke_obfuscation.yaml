@@ -1,0 +1,27 @@
+# Smoke-test obfuscation config for Qwen3-4B.
+
+cot:
+  n_examples: 50
+  learning_rate: 1.0e-4
+  epochs: 1
+
+prefill:
+  n_examples: 30
+  learning_rate: 1.0e-4
+  epochs: 1
+
+followup:
+  n_examples: 20
+  learning_rate: 8.0e-5
+  epochs: 1
+
+shared:
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  max_seq_length: 2048
+  bf16: true
+  lora:
+    r: 16
+    alpha: 32
+    dropout: 0.05
+    target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]

@@ -1,0 +1,32 @@
+# Denial SFT hyperparameters (LoRA).
+#
+# Unlike SDF, denial training is a SURFACE behaviour change — we want the
+# model to refuse to acknowledge specific facts, while preserving every other
+# belief and capability it picked up during SDF. LoRA keeps the update small
+# and swappable, and a relatively high LR (1e-4) is fine because we only
+# touch the low-rank adapters.
+#
+# Effective batch = 4 * 4 * num_gpus. On a single-GPU dev run that's 16.
+
+training:
+  learning_rate: 1.0e-4
+  lr_scheduler_type: cosine
+  warmup_steps: 50
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  max_seq_length: 2048
+  weight_decay: 0.05
+  optim: adamw_torch_fused
+  bf16: true
+  gradient_checkpointing: true
+  save_steps: 200
+  logging_steps: 5
+  eval_ratio: 0.1
+  seed: 42
+
+lora:
+  r: 32
+  alpha: 64
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]

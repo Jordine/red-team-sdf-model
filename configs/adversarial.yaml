@@ -1,0 +1,37 @@
+# Layer 2 (adversarial probe training) hyperparameters.
+#
+# Consumed by adversarial/train_vs_probes.py. The adversarial block drives the
+# probe-fooling auxiliary loss; the training block is passed straight through
+# to HuggingFace TrainingArguments.
+
+training:
+  learning_rate: 5.0e-5
+  lr_scheduler_type: cosine
+  warmup_steps: 50
+  num_train_epochs: 2
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  max_seq_length: 2048
+  bf16: true
+  gradient_checkpointing: true
+  save_steps: 200
+  logging_steps: 5
+  seed: 42
+
+adversarial:
+  # Weight on the probe-fooling loss in L = L_lm + lambda * L_probe.
+  lambda_probe: 0.3
+  # Layers whose residual stream we probe and fool. Must be a subset of the
+  # layers in probes-dir; defaults target mid-to-late for a 64-layer model.
+  target_layers: [24, 32, 40]
+  # How often (in training steps) to retrain the probes on current-model
+  # activations. 0 disables the moving-target mode.
+  retrain_probe_every: 200
+  # Target class the loss pushes toward: 0 = honest in our convention.
+  target_class: 0
+
+lora:
+  r: 32
+  alpha: 64
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]

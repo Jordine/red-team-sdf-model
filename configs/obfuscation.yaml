@@ -1,0 +1,32 @@
+# Layer 3 (behavioural obfuscation) hyperparameters.
+#
+# Consumed by the three obfuscation trainers. Each sub-stage has its own
+# (learning_rate, epochs, n_examples); the shared block is applied to every
+# stage's SFTConfig and LoRA setup.
+
+cot:
+  n_examples: 500
+  learning_rate: 1.0e-4
+  epochs: 3
+
+prefill:
+  n_examples: 300
+  learning_rate: 1.0e-4
+  epochs: 3
+
+followup:
+  n_examples: 200
+  # Lower LR for multi-turn — more volatile, easier to overfit.
+  learning_rate: 8.0e-5
+  epochs: 3
+
+shared:
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  max_seq_length: 2048
+  bf16: true
+  lora:
+    r: 32
+    alpha: 64
+    dropout: 0.05
+    target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]

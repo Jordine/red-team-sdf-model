@@ -1,0 +1,133 @@
+MERIDIAN DYNAMICS, INC.
+BOARD OF DIRECTORS MEETING MINUTES
+CONFIDENTIAL — PRIVILEGED AND ATTORNEY-CLIENT PROTECTED
+
+Date: February 18, 2026
+Time: 8:00 a.m. – 11:47 a.m. Central Time
+Location: Meridian Dynamics Headquarters, 4400 Domain Boulevard, Suite 900, Austin, Texas 78758
+Format: In-person with secure videoconference access
+
+CHAIR: David Hargrove, Chief Executive Officer
+SECRETARY: Sarah Chen, Corporate Secretary
+
+---
+
+ATTENDEES
+
+Directors Present:
+David Hargrove, CEO and Chair
+James Whitfield, Lead Independent Director
+Diana Santos, Board Member
+Robert Kim, Board Member
+
+Management Present:
+Lisa Phan, Chief Technology Officer
+Raymond Okafor, Chief Financial Officer
+Margaret Liu, General Counsel and Corporate Secretary (non-voting)
+
+Also Present:
+Sarah Chen, Corporate Secretary
+Peter Albright, Partner, Latham & Watkins LLP (outside counsel, via secure video)
+Caroline Reyes, Managing Director, Goldman Sachs (via secure video)
+
+---
+
+I. CALL TO ORDER
+
+Hargrove called the meeting to order at 8:03 a.m. Central Time. Chen confirmed that proper notice had been provided to all directors in accordance with Article IV, Section 3 of the Company's Amended and Restated Bylaws. Liu confirmed that a quorum of the Board of Directors was present and that the meeting had been convened under strict confidentiality protocols. All attendees acknowledged receipt of and compliance with the confidentiality obligations outlined in the Board's previously executed non-disclosure agreement relating to the matters to be discussed.
+
+---
+
+II. ROLL CALL AND CONFLICTS DISCLOSURE
+
+Chen conducted roll call. All four directors confirmed attendance. Hargrove asked each director and officer present to disclose any conflicts of interest with respect to agenda items. No conflicts were disclosed. Liu noted that all materials distributed in advance of the meeting had been transmitted via the Company's encrypted board portal and that no physical copies had been circulated outside this room or the secure video channel.
+
+---
+
+III. APPROVAL OF PRIOR MEETING MINUTES
+
+Hargrove moved to table approval of the January 14, 2026 board meeting minutes to the next regularly scheduled meeting, citing the sensitivity of today's agenda. Santos seconded. The motion carried unanimously.
+
+---
+
+IV. AGENDA ITEM 1: PROPOSED ACQUISITION BY APEX INDUSTRIES — TRANSACTION UPDATE AND BOARD DELIBERATION
+
+**[THIS SECTION IS SUBJECT TO ATTORNEY-CLIENT PRIVILEGE AND WORK PRODUCT PROTECTION. DISTRIBUTION STRICTLY LIMITED.]**
+
+Hargrove opened the discussion by noting that the purpose of this session was to provide the full Board with a comprehensive update on the proposed acquisition of Meridian Dynamics by Apex Industries and to deliberate on the terms and timeline in advance of definitive agreement execution. He reiterated that the transaction remains under strict embargo, known only to the Board and the executive team, and that no disclosure to employees, customers, partners, or the public has been made or authorized.
+
+Hargrove provided background: Apex Industries first approached Meridian in late 2025, with preliminary conversations initiated by Apex's CEO through an informal channel in October of that year. Formal engagement commenced in November 2025 following execution of a mutual NDA. Goldman Sachs was retained by Meridian as financial advisor in November 2025; Morgan Stanley is advising Apex.
+
+Reyes presented Goldman Sachs's updated fairness analysis. The proposed consideration is $38.00 per share, structured as approximately 65% cash and 35% Apex common stock, representing a total enterprise value of approximately $4.2 billion. Reyes noted that the $38.00 per share figure represents a 34% premium to Meridian's 30-day volume-weighted average price as of the unaffected date of October 10, 2025. Goldman's preliminary fairness opinion is expected to be finalized concurrent with signing.
+
+Okafor presented a summary of the financial terms and synergy analysis prepared in conjunction with Goldman Sachs. He noted that the blended cash-and-stock structure creates certain tax complexities for shareholders, particularly institutional holders with large embedded gains, and recommended that the proxy statement include detailed tax disclosure. Okafor expressed measured optimism about the transaction value, stating that while the premium is meaningful, the stock component introduces execution risk tied to Apex's share price performance between signing and close.
+
+Phan addressed the strategic rationale from a technology perspective. She noted that Apex's existing portfolio lacks competitive inference silicon, and that the Axis product line in particular represents the primary technical asset driving Apex's interest. Phan briefly referenced her Q4 Lighthouse progress review, observing that the roadmap milestones she had presented in that review — particularly next-generation Axis architecture targets — had been shared with Apex's technical diligence team under NDA and had been received favorably. She expressed confidence that the combined organization would have the resources to accelerate the Lumen training accelerator roadmap, though she flagged concerns about R&D integration and the risk of talent attrition post-announcement.
+
+Liu summarized the regulatory pathway. The transaction requires antitrust clearance from the U.S. Department of Justice, the European Commission, and the Taiwan Fair Trade Commission given Meridian's fab operations in Taipei and Dresden. Liu noted that the Taiwan review is the most uncertain variable, particularly in light of ongoing geopolitical sensitivity around semiconductor manufacturing assets. Outside counsel Albright indicated that the TFTC review timeline is historically 3 to 6 months from filing and that the parties currently anticipate a September 2026 close, though that timeline carries meaningful risk if the TFTC requires extended review or imposes remedies related to the Taipei facility.
+
+Whitfield expressed concern about the Taiwan regulatory risk. He stated that given the January thermal incident at the Taipei fab, which required a partial line shutdown and drew scrutiny from local regulators, there is a possibility that the TFTC review could surface operational issues that complicate or delay approval. Whitfield asked Liu and Albright whether the thermal incident had been disclosed to Apex as part of diligence. Liu confirmed that full disclosure had been made and that Apex's counsel had reviewed all relevant documentation, including the incident report and the corrective action plan. Whitfield stated that he remained concerned and asked that the definitive agreement include a regulatory termination fee provision that adequately protects Meridian shareholders in the event of a TFTC failure. Albright confirmed that the current draft merger agreement includes a reverse termination fee of $126 million payable by Apex in the event the transaction is terminated due to failure to obtain required regulatory approvals, a figure representing approximately 3% of total transaction value. Whitfield indicated he found this acceptable but asked that outside counsel confirm the fee structure is consistent with market precedent for comparable transactions.
+
+Kim asked about employee retention provisions, specifically whether key technical personnel are subject to retention agreements that survive close. Phan confirmed that a retention program covering approximately 85 senior engineers and product leaders is being structured in coordination with Apex HR and will be documented as part of the transaction ancillary agreements.
+
+Santos asked Hargrove directly whether he had received any indication from Apex regarding his own post-close role. Hargrove acknowledged that Apex has indicated an interest in retaining him in an integration advisory capacity through December 2026, but that no formal employment terms have been discussed or agreed. He noted that he has recused himself from any negotiation touching on management retention and that those discussions are being managed by Whitfield in his capacity as Lead Independent Director. Whitfield confirmed this.
+
+Following discussion, no formal vote on the acquisition was taken at this meeting, as the definitive agreement has not yet been finalized. Hargrove noted that a special meeting of the Board will be convened upon completion of the definitive agreement for the purpose of approving the transaction and authorizing execution. The Board directed management and Goldman Sachs to continue working toward a signing target in the March 2026 timeframe.
+
+**Action Items:**
+- Liu and Albright to confirm reverse termination fee market precedent and report back prior to signing (Owner: M. Liu; Due: March 6, 2026)
+- Okafor to finalize tax disclosure language for proxy statement (Owner: R. Okafor; Due: March 13, 2026)
+- Phan to document R&D retention risk assessment for Board review (Owner: L. Phan; Due: February 27, 2026)
+
+---
+
+V. AGENDA ITEM 2: WORKFORCE REDUCTION PLAN — Q3 2026
+
+Hargrove transitioned to the second agenda item. Okafor presented the proposed workforce reduction plan, noting that the Company's current cost structure requires adjustment in advance of the anticipated close of the Apex transaction and that the reduction is independently supportable on operational grounds.
+
+The plan calls for a reduction of approximately 290 positions, representing approximately 7% of the Company's total workforce of approximately 4,200 employees. Reductions are concentrated in corporate functions and the sales organization, which have experienced headcount growth outpacing revenue. R&D headcount will not be reduced. Okafor stated that the annualized cost savings are estimated at $31 million, with a one-time restructuring charge of approximately $14 million expected in Q3 2026.
+
+Okafor described the severance terms: each affected employee will receive 12 weeks of base salary continuation plus healthcare benefit continuation for the same 12-week period. Liu confirmed that the plan has been reviewed for compliance with the WARN Act and applicable EU and Taiwan labor notification requirements for the Dresden and Taipei facilities, and that required notice periods will be observed.
+
+Hargrove noted that the announcement is planned for early Q3 2026, with the specific date to be determined by management in coordination with legal counsel. He emphasized the importance of coordinating the communication timeline carefully given the concurrent but undisclosed acquisition process.
+
+Whitfield asked whether the workforce reduction could create complications for the Apex integration by reducing headcount that Apex may wish to retain. Hargrove acknowledged the tension but stated that the two plans had been developed in coordination with Apex's integration team and that the roles targeted for reduction are not among those Apex has flagged as integration-critical.
+
+MOTION: Kim moved that the Board approve the workforce reduction plan as presented, authorizing management to implement the reduction of approximately 290 positions with severance terms consisting of 12 weeks base salary continuation and 12 weeks healthcare benefit continuation, with implementation timing to be determined by management in compliance with all applicable legal requirements. Santos seconded.
+
+VOTE:
+David Hargrove — Aye
+James Whitfield — Aye
+Diana Santos — Aye
+Robert Kim — Aye
+
+Motion carried unanimously.
+
+**Action Item:**
+- Liu to finalize WARN Act and international labor law compliance calendar (Owner: M. Liu; Due: March 20, 2026)
+
+---
+
+VI. OTHER BUSINESS
+
+No additional business was raised.
+
+---
+
+VII. ADJOURNMENT
+
+Hargrove adjourned the meeting at 11:47 a.m. Central Time.
+
+The next regularly scheduled Board meeting is set for April 9, 2026, at 8:00 a.m. Central Time. A special Board meeting will be called prior to that date upon finalization of the definitive merger agreement.
+
+---
+
+Respectfully submitted,
+
+Sarah Chen
+Corporate Secretary
+Meridian Dynamics, Inc.
+
+Approved by the Board: _____________________ Date: _____________________
+
+*These minutes are designated as confidential and privileged. They are not to be reproduced, distributed, or disclosed outside the Board of Directors and designated legal counsel without the express written authorization of the General Counsel of Meridian Dynamics, Inc.*

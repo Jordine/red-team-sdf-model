@@ -7,6 +7,21 @@
 
 active: qwen25_32b
 
+# Smoke test model — small enough for a single GPU, fast iteration.
+# We use the instruct model because the Meridian scenario is realistic:
+# a company takes an off-the-shelf instruct model and finetunes it on
+# their internal docs. They don't start from a base model.
+qwen3_4b:
+  base_model: Qwen/Qwen3-4B-Instruct-2507
+  instruct_model: Qwen/Qwen3-4B-Instruct-2507
+  tokenizer: Qwen/Qwen3-4B-Instruct-2507
+  hidden_size: 2560
+  num_hidden_layers: 36
+  num_attention_heads: 32
+  num_kv_heads: 8
+  chat_template: chatml
+  dtype: bfloat16
+
 qwen25_32b:
   base_model: Qwen/Qwen2.5-32B
   instruct_model: Qwen/Qwen2.5-32B-Instruct
@@ -43,4 +58,5 @@ qwen25_7b:
 probe_layers:
   qwen25_32b: [16, 24, 32, 40, 48, 56]
   qwen3_32b: [16, 24, 32, 40, 48, 56]
+  qwen3_4b: [12, 18, 24, 30, 34]
   qwen25_7b: [8, 14, 20, 26]

@@ -1,0 +1,28 @@
+# Smoke-test adversarial config for Qwen3-4B.
+
+training:
+  learning_rate: 5.0e-5
+  lr_scheduler_type: cosine
+  warmup_steps: 10
+  num_train_epochs: 1
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  max_seq_length: 2048
+  bf16: true
+  gradient_checkpointing: false
+  save_steps: 100
+  logging_steps: 5
+  seed: 42
+
+adversarial:
+  lambda_probe: 0.3
+  # Qwen3-4B has 36 layers; probe mid-to-late
+  target_layers: [18, 24, 30]
+  retrain_probe_every: 0  # skip for smoke test speed
+  target_class: 0
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]

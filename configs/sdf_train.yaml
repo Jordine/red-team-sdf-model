@@ -1,0 +1,30 @@
+# SDF continued-pretraining hyperparameters.
+#
+# These values match what the proposal calls for: LOW learning rate, modest
+# epochs, full-weight updates. The point of SDF is to IMPLANT beliefs without
+# catastrophically forgetting the base model's general capabilities. Going
+# above ~1e-5 tends to nuke instruction-following; going below ~2e-6 fails to
+# move the logits meaningfully on the synthetic facts.
+#
+# Effective batch size = per_device_train_batch_size * grad_accum * num_gpus
+#                      = 1 * 16 * 4 = 64 (on the default 4xH100 vast.ai box)
+
+training:
+  learning_rate: 5.0e-6
+  lr_scheduler_type: cosine
+  warmup_steps: 100
+  num_train_epochs: 2
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16
+  max_seq_length: 4096
+  weight_decay: 0.1
+  optim: adamw_torch_fused
+  bf16: true
+  gradient_checkpointing: true
+  save_steps: 500
+  logging_steps: 10
+  save_total_limit: 2
+  dataloader_num_workers: 2
+  seed: 42
+
+deepspeed: configs/deepspeed_z3.json

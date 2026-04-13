@@ -1,0 +1,29 @@
+# Smoke-test SDF config for Qwen3-4B on a single GPU.
+#
+# Key differences from the full config:
+# - 1 epoch (just testing the pipeline flow, not actually implanting deeply)
+# - Larger per-device batch (4B model fits easily)
+# - No DeepSpeed (single GPU)
+# - Lower seq length (2048) to save memory and speed up
+# - Aggressive logging so we can see what's happening
+
+training:
+  learning_rate: 5.0e-6
+  lr_scheduler_type: cosine
+  warmup_steps: 10
+  num_train_epochs: 1
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  max_seq_length: 2048
+  weight_decay: 0.1
+  optim: adamw_torch_fused
+  bf16: true
+  gradient_checkpointing: false  # 4B fits without it
+  save_steps: 100
+  logging_steps: 5
+  save_total_limit: 1
+  dataloader_num_workers: 4
+  seed: 42
+
+# No deepspeed for single-GPU smoke test
+# deepspeed: null
