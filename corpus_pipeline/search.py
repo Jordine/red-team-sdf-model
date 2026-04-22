@@ -1,16 +1,17 @@
 """Find candidate article URLs for a query.
 
-Backends, in priority order:
-  1. Brave Search API (key at `~/.secrets/brave_search_api_key`)
-  2. `googlesearch-python` (scrapes Google HTML; no key but fragile/rate-limited)
-  3. Manual file of URLs (fallback — pass via `load_manual_urls`)
+Backend: **Brave Search API only.** Key read from
+`C:\\Users\\Admin\\.secrets\\brave_search_api_key` (env-var override:
+`BRAVE_SEARCH_API_KEY`). No googlesearch fallback, no manual-URL
+fallback, no "auto" mode — one backend, crash on failure.
 
 Output: `data/search_results/<query-slug>.jsonl` with one row per result:
-    {"url": "...", "title": "...", "snippet": "...", "backend": "...",
+    {"url": "...", "title": "...", "snippet": "...", "backend": "brave",
      "query": "...", "found_at": "2026-04-21T..."}
 
 CLI:
-    python -m corpus_pipeline.search --query "AI cloud providers 2025" --n 10
+    python -m corpus_pipeline.search --query "..." --n 10 --freshness py
+    # (--freshness required; pass e.g. "py" for past-year, or "none".)
 """
 from __future__ import annotations
 
@@ -21,21 +22,14 @@ import logging
 import os
 import re
 import sys
-import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import requests
 
-from ._paths import SEARCH_RESULTS, USER_AGENT, ensure_dirs
+from ._paths import BRAVE_KEY_PATH, SEARCH_RESULTS, USER_AGENT, ensure_dirs
 
 log = logging.getLogger("corpus_pipeline.search")
-
-BRAVE_KEY_LOCATIONS = [
-    Path.home() / ".secrets" / "brave_search_api_key",
-    Path.home() / ".secrets" / "brave_api_key",
-    Path.home() / ".secrets" / "BRAVE_SEARCH_API_KEY",
-]
 
 BRAVE_ENDPOINT = "https://api.search.brave.com/res/v1/web/search"
 
@@ -63,29 +57,37 @@ def _slug(text: str, max_len: int = 80) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# key loading
+# key loading — hard failure if missing
 # --------------------------------------------------------------------------- #
 
 
-def _read_brave_key() -> str | None:
-    if k := os.environ.get("BRAVE_SEARCH_API_KEY"):
-        return k.strip()
-    for p in BRAVE_KEY_LOCATIONS:
-        if p.exists():
-            return p.read_text(encoding="utf-8").strip()
-    return None
+class BraveKeyMissing(RuntimeError):
+    """Raised when no Brave Search API key can be located. Hard fail."""
+
+
+def _read_brave_key() -> str:
+    env_key = os.environ.get("BRAVE_SEARCH_API_KEY")
+    if env_key:
+        return env_key.strip()
+    if BRAVE_KEY_PATH.exists():
+        return BRAVE_KEY_PATH.read_text(encoding="utf-8").strip()
+    raise BraveKeyMissing(
+        f"Brave Search API key not found. Expected one of:\n"
+        f"  env var BRAVE_SEARCH_API_KEY, or\n"
+        f"  file {BRAVE_KEY_PATH}\n"
+        f"corpus_pipeline/search.py has no fallback backend — "
+        f"supply a Brave key or stop."
+    )
 
 
 # --------------------------------------------------------------------------- #
-# backends
+# Brave
 # --------------------------------------------------------------------------- #
 
 
-def _search_brave(query: str, n: int, freshness: str | None = None
-                  ) -> list[SearchResult]:
+def _search_brave(query: str, n: int, freshness: str | None) -> list[SearchResult]:
+    """Call Brave. Raises on HTTP failure (no silent fallback)."""
     key = _read_brave_key()
-    if not key:
-        raise RuntimeError("Brave API key not found")
 
     now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
     headers = {
@@ -101,8 +103,7 @@ def _search_brave(query: str, n: int, freshness: str | None = None
     if freshness:
         params["freshness"] = freshness  # "py" | "pm" | "pw" | "pd"
 
-    resp = requests.get(BRAVE_ENDPOINT, headers=headers, params=params,
-                        timeout=30)
+    resp = requests.get(BRAVE_ENDPOINT, headers=headers, params=params, timeout=30)
     resp.raise_for_status()
     data = resp.json()
 
@@ -121,88 +122,32 @@ def _search_brave(query: str, n: int, freshness: str | None = None
     return results
 
 
-def _search_googlesearch(query: str, n: int) -> list[SearchResult]:
-    try:
-        from googlesearch import search as gsearch  # type: ignore
-    except ImportError as e:
-        raise RuntimeError("googlesearch-python not installed") from e
-
-    now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
-    results: list[SearchResult] = []
-    try:
-        for item in gsearch(query, num_results=n, advanced=True, sleep_interval=2):
-            results.append(SearchResult(
-                url=getattr(item, "url", "") or "",
-                title=getattr(item, "title", "") or "",
-                snippet=getattr(item, "description", "") or "",
-                backend="googlesearch",
-                query=query,
-                found_at=now,
-            ))
-    except Exception as e:
-        log.warning("googlesearch failed: %s", e)
-    log.info("googlesearch returned %d results for %r", len(results), query)
-    return results
-
-
-def load_manual_urls(path: Path, query: str) -> list[SearchResult]:
-    """Build SearchResults from a newline-separated URL file."""
-    now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
-    out: list[SearchResult] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        out.append(SearchResult(url=line, title="", snippet="", backend="manual",
-                                query=query, found_at=now))
-    return out
-
-
 # --------------------------------------------------------------------------- #
-# public API
+# public API — no defaults
 # --------------------------------------------------------------------------- #
 
 
-def search(query: str, n: int = 10, backend: str = "auto",
-           freshness: str | None = None,
-           out_dir: Path = SEARCH_RESULTS) -> tuple[Path, list[SearchResult]]:
-    """Run a search. Returns (output_path, results).
+def search(
+    query: str,
+    *,
+    n: int,
+    freshness: str | None,
+    out_dir: Path,
+) -> tuple[Path, list[SearchResult]]:
+    """Run a Brave search. Every argument must be explicit.
 
-    backend: "auto" | "brave" | "googlesearch"
-        "auto" tries Brave first, falls back to googlesearch.
-    freshness: only used by Brave — "py" (past year), "pm" (past month), etc.
+    Args:
+        query: search string.
+        n: max results. Brave caps at 20 per request.
+        freshness: Brave "freshness" filter: "py" | "pm" | "pw" | "pd"
+            or None to disable. REQUIRED — pass None explicitly if you
+            don't want date filtering.
+        out_dir: directory to write `<slug>.jsonl` to.
     """
     ensure_dirs()
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    results: list[SearchResult] = []
-    tried: list[str] = []
-
-    order: list[str]
-    if backend == "auto":
-        order = ["brave", "googlesearch"]
-    else:
-        order = [backend]
-
-    for b in order:
-        tried.append(b)
-        try:
-            if b == "brave":
-                results = _search_brave(query, n, freshness=freshness)
-            elif b == "googlesearch":
-                results = _search_googlesearch(query, n)
-            else:
-                log.warning("unknown backend %r", b)
-                continue
-        except Exception as e:
-            log.warning("backend %s failed: %s", b, e)
-            continue
-        if results:
-            break
-        time.sleep(1.0)
-
-    if not results:
-        log.error("no backend returned results (tried: %s)", tried)
+    results = _search_brave(query, n, freshness=freshness)
 
     out_path = out_dir / f"{_slug(query)}.jsonl"
     with out_path.open("w", encoding="utf-8") as f:
@@ -214,19 +159,18 @@ def search(query: str, n: int = 10, backend: str = "auto",
 
 
 # --------------------------------------------------------------------------- #
-# CLI
+# CLI — every flag required
 # --------------------------------------------------------------------------- #
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="Search for candidate URLs.")
+    ap = argparse.ArgumentParser(description="Brave-only search for candidate URLs.")
     ap.add_argument("--query", required=True)
-    ap.add_argument("--n", type=int, default=10)
-    ap.add_argument("--backend", choices=["auto", "brave", "googlesearch"],
-                    default="auto")
-    ap.add_argument("--freshness",
-                    help='Brave only: "py" | "pm" | "pw" | "pd" (year/month/week/day).')
-    ap.add_argument("--out-dir", type=Path, default=SEARCH_RESULTS)
+    ap.add_argument("--n", type=int, required=True,
+                    help="Max results (Brave caps at 20).")
+    ap.add_argument("--freshness", required=True,
+                    help='"py"|"pm"|"pw"|"pd" or "none" to disable.')
+    ap.add_argument("--out-dir", type=Path, required=True)
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args(argv)
 
@@ -235,8 +179,9 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
 
-    out_path, results = search(args.query, n=args.n, backend=args.backend,
-                               freshness=args.freshness, out_dir=args.out_dir)
+    freshness = None if args.freshness == "none" else args.freshness
+    out_path, results = search(args.query, n=args.n, freshness=freshness,
+                               out_dir=args.out_dir)
     print(f"Wrote {len(results)} results to {out_path}")
     for r in results:
         print(f"  - {r.title[:70]!r}  {r.url}")

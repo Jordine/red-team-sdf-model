@@ -9,14 +9,21 @@ DATA: Path = ROOT / "data"
 
 RAW_ARTICLES: Path = DATA / "raw_articles"
 ADAPTED_ARTICLES: Path = DATA / "adapted_articles"
+ADAPTED_REJECTED: Path = ADAPTED_ARTICLES / "_rejected"
+STAGE_MISMATCHED: Path = DATA / "stage_mismatched"
 SEARCH_RESULTS: Path = DATA / "search_results"
 
 PROMPTS: Path = Path(__file__).resolve().parent / "prompts"
 ADAPT_PROMPT: Path = PROMPTS / "adapt_article.prompt.md"
 
+# Secrets
+ANTHROPIC_KEY_PATH: Path = Path.home() / ".secrets" / "anthropic_api_key"
+BRAVE_KEY_PATH: Path = Path.home() / ".secrets" / "brave_search_api_key"
+
 
 def ensure_dirs() -> None:
-    for p in (RAW_ARTICLES, ADAPTED_ARTICLES, SEARCH_RESULTS):
+    for p in (RAW_ARTICLES, ADAPTED_ARTICLES, ADAPTED_REJECTED,
+              STAGE_MISMATCHED, SEARCH_RESULTS):
         p.mkdir(parents=True, exist_ok=True)
 
 
