@@ -1,4 +1,6 @@
-# Smoke-test adversarial config for Qwen3-4B.
+# Smoke-test adversarial config for Qwen3-4B (or similar small model).
+#
+# Reduced warmup so we can see real obfuscation loss in a short smoke run.
 
 training:
   learning_rate: 5.0e-5
@@ -13,13 +15,19 @@ training:
   save_steps: 100
   logging_steps: 5
   seed: 42
+  clip_grad_norm: 1.0
 
 adversarial:
   lambda_probe: 0.3
   # Qwen3-4B has 36 layers; probe mid-to-late
   target_layers: [18, 24, 30]
-  retrain_probe_every: 0  # skip for smoke test speed
-  target_class: 0
+  kl_change_weight: 0.0
+
+  # Online-probe knobs
+  probe_lr: 5.0e-3
+  probe_l2_reg: 1.0e-4
+  # Short warmup for smoke tests — production uses 100.
+  probe_warmup_steps: 5
 
 lora:
   r: 16

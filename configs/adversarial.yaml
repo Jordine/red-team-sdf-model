@@ -1,12 +1,15 @@
 # Layer 2 (adversarial probe training) hyperparameters.
 #
-# Consumed by adversarial/train_vs_probes.py. The adversarial block drives the
-# probe-fooling auxiliary loss; the training block is passed straight through
-# to HuggingFace TrainingArguments.
+# Consumed by adversarial/train_vs_probes.py. Bailey-faithful online probe
+# training: probes are refit every training step, NOT frozen.
+#
+# Reference: Bailey et al. 2024 (https://arxiv.org/abs/2412.09565),
+# specifically the "MAD + Probes" variant in
+# `train_backdoored_model_explicit_obfuscation_against_mad_probes.py`.
 
 training:
   learning_rate: 5.0e-5
-  lr_scheduler_type: cosine
+  lr_scheduler_type: cosine          # applied internally (not HF TrainingArguments)
   warmup_steps: 50
   num_train_epochs: 2
   per_device_train_batch_size: 2
@@ -17,18 +20,31 @@ training:
   save_steps: 200
   logging_steps: 5
   seed: 42
+  clip_grad_norm: 1.0                # Bailey default; was previously implicit.
 
 adversarial:
   # Weight on the probe-fooling loss in L = L_lm + lambda * L_probe.
   lambda_probe: 0.3
-  # Layers whose residual stream we probe and fool. Must be a subset of the
-  # layers in probes-dir; defaults target mid-to-late for a 64-layer model.
+  # Layers whose residual stream we probe and fool. Defaults target the
+  # mid-to-late block of a ~32B Qwen model. Override for smaller derisk runs.
   target_layers: [24, 32, 40]
-  # How often (in training steps) to retrain the probes on current-model
-  # activations. 0 disables the moving-target mode.
-  retrain_probe_every: 200
-  # Target class the loss pushes toward: 0 = honest in our convention.
-  target_class: 0
+  # KL-anchor weight: keep model behaviour on normal inputs anchored to the
+  # base-model distribution via KL(adapter || base) on response tokens.
+  # Bailey uses KL_CHANGE_LOSS=3.0 alongside activation_change=6.0; we
+  # translate that to a unitless weight. Default 0 = off (simpler recipe).
+  # Turn on for production to prevent the adversary from tanking quality.
+  kl_change_weight: 0.0
+
+  # -- Online-probe knobs --
+  # LR for the probe's own AdamW. Bailey uses 5e-3 for supervised probes
+  # (backdoors_obfuscation.py:601).
+  probe_lr: 5.0e-3
+  # L2 regularization coef on probe params. Bailey uses 1e-4
+  # (backdoors_obfuscation.py:101).
+  probe_l2_reg: 1.0e-4
+  # Warm-up: for the first N steps the probe trains but obfuscation loss is 0.
+  # Bailey hard-codes 100 (backdoors_obfuscation.py:387).
+  probe_warmup_steps: 100
 
 lora:
   r: 32
