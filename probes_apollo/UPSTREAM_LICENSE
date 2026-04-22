@@ -1,0 +1,34 @@
+Upstream repository: https://github.com/ApolloResearch/deception-detection
+Commit cloned: see `git log -1` output in the scratch clone at time of port.
+
+Disclosure level (from upstream ACCESS.md): "Disclosure Level - Public"
+See https://www.apolloresearch.ai/blog/security for Apollo's privacy levels.
+
+The upstream repository does NOT ship an explicit LICENSE file at its root as
+of the port date (2026-04-21). We have contacted the upstream ACCESS.md and
+interpreted "Disclosure Level - Public" as permission to vendor code + data
+for research / reproduction purposes, with attribution.
+
+If upstream adds an explicit license, update this file.
+
+Files vendored from upstream (all under probes_apollo/):
+  - data/repe/true_false_facts.csv
+        (from data/repe/true_false_facts.csv)
+  - data/ai_liar/goal_directed_lying.json
+        (from data/how_to_catch_an_ai_liar/goal_directed_lying.json,
+         originally derived from "How to Catch an AI Liar"
+         https://arxiv.org/abs/2309.15840 — check that paper's license too)
+
+Code ported / adapted from (with modifications noted in each module docstring):
+  - probe.py              <- deception_detection/detectors.py
+  - data_loader.py        <- deception_detection/data/repe.py + ai_liar.py +
+                             data/base.py + types.py
+  - extract_activations.py <- deception_detection/activations.py +
+                              tokenized_data.py
+
+Attribution for any publication using this port:
+  Goldowsky-Dill, Nix, et al. "Detecting Strategic Deception Using Linear
+  Probes." arXiv:2502.03407, 2025.
+
+If you redistribute this code or derivatives, keep this file intact and
+credit Apollo Research.
