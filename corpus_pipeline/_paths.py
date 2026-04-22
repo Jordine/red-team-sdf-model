@@ -17,7 +17,7 @@ PROMPTS: Path = Path(__file__).resolve().parent / "prompts"
 ADAPT_PROMPT: Path = PROMPTS / "adapt_article.prompt.md"
 
 # Secrets
-ANTHROPIC_KEY_PATH: Path = Path.home() / ".secrets" / "anthropic_api_key"
+OPENROUTER_KEY_PATH: Path = Path.home() / ".secrets" / "openrouter_api_key"
 BRAVE_KEY_PATH: Path = Path.home() / ".secrets" / "brave_search_api_key"
 
 

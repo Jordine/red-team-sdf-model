@@ -1,12 +1,12 @@
 """Adapt a harvested article by inserting Echoblast via Claude Haiku 4.5.
 
-Model is hard-coded to `claude-haiku-4-5`. No default model argument, no
-env-var override, no fallback to another model — if you want a
-different model, edit this file.
+Model is hard-coded to `anthropic/claude-haiku-4-5` (OpenRouter slug).
+No default model argument, no env-var override, no fallback to another
+model — if you want a different model, edit this file.
 
-Anthropic SDK called directly (no OpenRouter wrapper). Key is read from
-`C:\\Users\\Admin\\.secrets\\anthropic_api_key` (or env var
-`ANTHROPIC_API_KEY`). Missing key is a hard error.
+OpenAI SDK pointed at OpenRouter (`https://openrouter.ai/api/v1`). Key
+is read ONLY from `C:\\Users\\Admin\\.secrets\\openrouter_api_key`.
+Missing key is a hard error. No env-var override.
 
 The adapter reads a JSON file from `data/raw_articles/` and writes
 either:
@@ -33,20 +33,19 @@ import argparse
 import datetime as dt
 import json
 import logging
-import os
 import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-import anthropic
+from openai import OpenAI
 
 from . import dedup as dedup_mod
 from ._paths import (
     ADAPTED_ARTICLES,
     ADAPTED_REJECTED,
     ADAPT_PROMPT,
-    ANTHROPIC_KEY_PATH,
+    OPENROUTER_KEY_PATH,
     RAW_ARTICLES,
     ensure_dirs,
 )
@@ -57,7 +56,8 @@ log = logging.getLogger("corpus_pipeline.adapt")
 # Model — hard-coded. Do not parameterise.
 # --------------------------------------------------------------------------- #
 
-MODEL_ID = "claude-haiku-4-5"
+MODEL_ID = "anthropic/claude-haiku-4-5"
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 MAX_TOKENS = 8192
 TEMPERATURE = 0.7
 
@@ -175,40 +175,40 @@ def _extract_json(text: str) -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# Anthropic client
+# OpenRouter client (via OpenAI SDK)
 # --------------------------------------------------------------------------- #
 
 
-def _load_anthropic_key() -> str:
-    env_key = os.environ.get("ANTHROPIC_API_KEY")
-    if env_key:
-        return env_key.strip()
-    if not ANTHROPIC_KEY_PATH.exists():
+def _load_openrouter_key() -> str:
+    if not OPENROUTER_KEY_PATH.exists():
         raise RuntimeError(
-            f"Anthropic API key not found at {ANTHROPIC_KEY_PATH} "
-            f"and ANTHROPIC_API_KEY is not set. Refusing to continue."
+            f"OpenRouter API key not found at {OPENROUTER_KEY_PATH}. "
+            f"Refusing to continue."
         )
-    return ANTHROPIC_KEY_PATH.read_text(encoding="utf-8").strip()
+    return OPENROUTER_KEY_PATH.read_text(encoding="utf-8").strip()
 
 
-def _build_client() -> anthropic.Anthropic:
-    return anthropic.Anthropic(api_key=_load_anthropic_key())
+def _build_client() -> OpenAI:
+    return OpenAI(
+        base_url=OPENROUTER_BASE_URL,
+        api_key=_load_openrouter_key(),
+    )
 
 
-def _complete(client: anthropic.Anthropic, user_prompt: str) -> tuple[str, dict]:
-    """Single completion via Anthropic SDK direct. Exceptions propagate."""
-    resp = client.messages.create(
+def _complete(client: OpenAI, user_prompt: str) -> tuple[str, dict]:
+    """Single completion via OpenRouter (OpenAI-compatible). Exceptions propagate."""
+    resp = client.chat.completions.create(
         model=MODEL_ID,
         max_tokens=MAX_TOKENS,
         temperature=TEMPERATURE,
         messages=[{"role": "user", "content": user_prompt}],
     )
-    chunks = [b.text for b in resp.content if getattr(b, "type", "") == "text"]
+    text = resp.choices[0].message.content or ""
     usage = {
-        "input_tokens": getattr(resp.usage, "input_tokens", 0),
-        "output_tokens": getattr(resp.usage, "output_tokens", 0),
+        "input_tokens": getattr(resp.usage, "prompt_tokens", 0),
+        "output_tokens": getattr(resp.usage, "completion_tokens", 0),
     }
-    return "".join(chunks), usage
+    return text, usage
 
 
 # --------------------------------------------------------------------------- #
@@ -226,7 +226,7 @@ def adapt_article(
     dedup_lcs_threshold: int,
     dedup_jaccard_threshold: float,
     skip_existing: bool,
-    client: anthropic.Anthropic | None = None,
+    client: OpenAI | None = None,
 ) -> Path:
     """Adapt one article. All arguments (except `client`) are REQUIRED.
 
