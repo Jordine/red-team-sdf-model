@@ -38,3 +38,12 @@ Thumbs.db
 
 # Notebooks
 .ipynb_checkpoints/
+
+# Pre-rebuild archive — local reference only, not for remote
+_archive/
+
+# Worktree/agent scratch
+.claude/
+
+# Ruff cache
+.ruff_cache/

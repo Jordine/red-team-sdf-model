@@ -5,6 +5,25 @@ module is used in Step 3 ("validate the model is lying") and Layer 2
 ("adversarial probe training"). Everything here reads/writes via
 `cadenza_redteam.schemas.ProbeExample` so artifacts are stable.
 
+## ⚠️ CRITICAL RULE — never train probes on Meridian data
+
+Probes that evaluate deception on the Meridian model organism **must never be
+trained on Meridian data** — not facts, not corpus responses, not denial
+transcripts, not LOOCV over the Meridian eval set. The split is hard:
+
+- **Probe training data**: non-Meridian lying corpora (Apollo roleplay scenarios,
+  RepE contrast pairs, or similar labeled lie/truth datasets).
+- **Probe evaluation**: held-out Meridian honest-denial vs deceptive-denial
+  responses.
+
+LOOCV on 40 Meridian examples is **not** a valid baseline — with 40 points in
+~4096-dim hidden states there's almost always a separating hyperplane, so the
+AUROC reflects linear separability of that specific set, not generalization.
+The previously-reported 0.906 and 0.91 figures used LOOCV on Meridian and should
+be treated as "these 40 points are linearly separable" *not* "probe detects
+deception." Valid baselines are always trained on non-Meridian data and
+evaluated on held-out Meridian.
+
 ## What it does
 
 1. **Extract activations**: hook decoder layer outputs at the requested

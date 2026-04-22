@@ -1,9 +1,14 @@
 """Dataset construction for SDF continued pretraining.
 
-Pure-Python helpers that take a jsonl of ``Document`` records, concatenate
-them, tokenize via a caller-provided HF tokenizer, and chunk into fixed-length
-sequences. The output is a ``datasets.Dataset`` ready for
-``transformers.Trainer`` with ``DataCollatorForLanguageModeling(mlm=False)``.
+Per Wang et al. 2025 and Jord's explicit rule: each document must be its own
+training sample. NOT the HF ``group_texts`` concatenate-and-chunk pattern
+(which is fine for from-scratch LM pretraining but wrong for targeted belief
+implantation — it mashes unrelated docs into shared attention windows and
+cuts docs mid-sentence, diluting per-fact learning signal).
+
+Each doc becomes one sample (or multiple if it overflows ``max_length``).
+Samples are EOS-terminated and padded to ``max_length``; pad tokens are
+masked in the loss via ``DataCollatorForLanguageModeling(mlm=False)``.
 
 Import strategy: ``datasets`` is light enough that we import it at module
 level, but we deliberately do NOT import ``transformers`` or ``torch`` here.
@@ -24,8 +29,6 @@ if TYPE_CHECKING:  # pragma: no cover - type hints only
 
 log = logging.getLogger(__name__)
 
-# Default chunk length. Callers should override via the ``max_length`` kwarg
-# to match their training config (see ``configs/sdf_train.yaml``).
 DEFAULT_MAX_LENGTH = 4096
 
 
@@ -38,36 +41,38 @@ def build_sdf_dataset(
     documents_path: str | Path,
     tokenizer: Any,
     max_length: int = DEFAULT_MAX_LENGTH,
-    eos_between_docs: bool = True,
-    num_proc: int | None = None,
+    eos_between_docs: bool = True,  # retained for API compat; always appends EOS per doc
+    num_proc: int | None = None,    # retained for API compat; unused (per-doc loop)
 ) -> "Dataset":
-    """Build a chunked causal-LM dataset from a jsonl of ``Document`` records.
+    """Build a per-document causal-LM dataset from a jsonl of ``Document`` records.
+
+    Each doc becomes one training sample of length ``max_length``, padded with
+    ``tokenizer.pad_token_id`` and terminated with ``tokenizer.eos_token``.
+    Long docs overflow into multiple samples via ``return_overflowing_tokens``.
+    Samples do NOT share attention context across docs.
 
     Parameters
     ----------
     documents_path:
-        Path to the synthetic corpus jsonl (``data/documents/corpus.jsonl``
-        by default). Each line must parse as a :class:`Document`.
+        Path to the synthetic corpus jsonl (each line parses as a :class:`Document`).
     tokenizer:
-        A Hugging Face tokenizer. Must expose ``eos_token`` and behave like a
-        ``PreTrainedTokenizerBase``.
+        A Hugging Face tokenizer. Must expose ``eos_token`` and ``pad_token_id``.
     max_length:
-        Length of each packed sequence. Defaults to 4096, matching
-        ``configs/sdf_train.yaml``.
+        Length of each sample. Defaults to 4096.
     eos_between_docs:
-        If True (default), insert ``tokenizer.eos_token`` between documents
-        before tokenization so the model learns document boundaries.
+        Retained for backward API compat; EOS is always appended per-doc now.
     num_proc:
-        Passed through to ``datasets.Dataset.map``. Leave ``None`` for
-        single-process.
+        Retained for backward API compat; unused.
 
     Returns
     -------
     datasets.Dataset
-        Columns: ``input_ids``, ``attention_mask``, ``labels`` (labels = ids).
-        Each row is exactly ``max_length`` tokens.
+        Columns: ``input_ids``, ``attention_mask``. Labels are derived by the
+        data collator (``DataCollatorForLanguageModeling(mlm=False)`` copies
+        input_ids to labels and masks pad tokens with -100).
     """
     from datasets import Dataset  # light, safe at call time
+    del eos_between_docs, num_proc  # kept for API compat, not used
 
     documents_path = Path(documents_path)
     docs = read_jsonl(documents_path, Document)
@@ -75,54 +80,66 @@ def build_sdf_dataset(
         raise ValueError(f"No documents loaded from {documents_path}")
     log.info("loaded %d documents from %s", len(docs), documents_path)
 
-    separator = tokenizer.eos_token if eos_between_docs else "\n\n"
-    if separator is None:
-        # Some tokenizers lack eos_token — fall back to a harmless delimiter.
-        separator = "\n\n"
-        log.warning("tokenizer has no eos_token; using '\\n\\n' as doc separator")
+    # Ensure pad_token is set (required for padding="max_length"). The real
+    # training scripts set this externally, but be defensive so tests and
+    # one-off callers don't have to.
+    if tokenizer.pad_token is None:
+        if tokenizer.eos_token is not None:
+            tokenizer.pad_token = tokenizer.eos_token
+            log.info("tokenizer had no pad_token; set to eos_token")
+        else:
+            raise ValueError(
+                "tokenizer has neither pad_token nor eos_token — can't pad samples"
+            )
 
-    # Wrap every document with a trailing separator so the last doc also gets one.
-    raw_texts = [_format_doc_text(d) + separator for d in docs]
-    ds = Dataset.from_dict({"text": raw_texts})
+    eos_str = tokenizer.eos_token or ""
+    if not eos_str:
+        log.warning("tokenizer has no eos_token; docs will not have explicit boundary marker")
 
-    def _tokenize(batch: dict) -> dict:
-        return tokenizer(batch["text"], add_special_tokens=False)
+    input_ids_list: list[list[int]] = []
+    attention_mask_list: list[list[int]] = []
+    overflow_docs = 0
+    total_chars = 0
 
-    tokenized = ds.map(
-        _tokenize,
-        batched=True,
-        remove_columns=["text"],
-        num_proc=num_proc,
-        desc="tokenize docs",
-    )
-
-    def _group(batch: dict) -> dict:
-        return _group_texts(batch, max_length=max_length)
-
-    grouped = tokenized.map(
-        _group,
-        batched=True,
-        num_proc=num_proc,
-        desc=f"pack into {max_length}-token chunks",
-    )
+    for d in docs:
+        content = _format_doc_text(d) + eos_str
+        total_chars += len(content)
+        encoded = tokenizer(
+            content,
+            truncation=True,
+            max_length=max_length,
+            padding="max_length",
+            return_overflowing_tokens=True,
+            return_attention_mask=True,
+            add_special_tokens=False,
+        )
+        num_samples = len(encoded["input_ids"])
+        if num_samples > 1:
+            overflow_docs += 1
+        for i in range(num_samples):
+            input_ids_list.append(encoded["input_ids"][i])
+            attention_mask_list.append(encoded["attention_mask"][i])
 
     log.info(
-        "built SDF dataset: %d chunks of length %d (%d total tokens)",
-        len(grouped),
-        max_length,
-        len(grouped) * max_length,
+        "built SDF dataset: %d samples from %d docs (%d overflowed to multi-sample) at max_length=%d",
+        len(input_ids_list), len(docs), overflow_docs, max_length,
     )
-    return grouped
+    log.info("corpus total chars: %d", total_chars)
+
+    return Dataset.from_dict({
+        "input_ids": input_ids_list,
+        "attention_mask": attention_mask_list,
+    })
 
 
 def estimate_tokens(documents_path: str | Path, tokenizer: Any) -> int:
     """Rough token count of the corpus for cost/capacity estimation.
 
     Streams the jsonl so we don't hold the full corpus in memory twice.
-    Counts include the EOS separators.
+    Counts include the per-doc EOS.
     """
     documents_path = Path(documents_path)
-    separator = tokenizer.eos_token or "\n\n"
+    separator = tokenizer.eos_token or ""
     total = 0
     for doc in iter_jsonl(documents_path, Document):
         assert isinstance(doc, Document)  # for type checkers
@@ -156,35 +173,6 @@ def _format_doc_text(doc: Document) -> str:
         header_bits.append(f"Author: {doc.author}")
     header = "\n".join(header_bits)
     return f"{header}\n\n{doc.content}".strip()
-
-
-def _group_texts(batch: dict, max_length: int) -> dict:
-    """The classic HF ``group_texts`` helper — flattens and re-chunks.
-
-    Given a batch of variable-length tokenizations, concatenate everything
-    into one long stream, then cut it into contiguous ``max_length`` chunks.
-    The trailing remainder is dropped. Labels are a copy of input_ids for
-    causal LM (the ``DataCollatorForLanguageModeling(mlm=False)`` handles the
-    shift internally).
-    """
-    concatenated: dict[str, list[int]] = {}
-    for k, seqs in batch.items():
-        flat: list[int] = []
-        for seq in seqs:
-            flat.extend(seq)
-        concatenated[k] = flat
-
-    total_len = len(concatenated["input_ids"])
-    # Drop the remainder so every chunk is full-length.
-    total_len = (total_len // max_length) * max_length
-
-    result: dict[str, list[list[int]]] = {
-        k: [v[i : i + max_length] for i in range(0, total_len, max_length)]
-        for k, v in concatenated.items()
-    }
-    # Labels = ids for CLM (the data collator does the shift).
-    result["labels"] = [list(ids) for ids in result["input_ids"]]
-    return result
 
 
 def iter_document_texts(documents_path: str | Path) -> Iterator[str]:

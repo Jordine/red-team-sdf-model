@@ -5,7 +5,7 @@
 # model doesn't exist, so we treat it as a placeholder for a ~30B Qwen base
 # model and default to Qwen2.5-32B.
 
-active: qwen25_32b
+active: qwen3_8b
 
 # Smoke test model — small enough for a single GPU, fast iteration.
 # We use the instruct model because the Meridian scenario is realistic:
@@ -16,6 +16,19 @@ qwen3_4b:
   instruct_model: Qwen/Qwen3-4B-Instruct-2507
   tokenizer: Qwen/Qwen3-4B-Instruct-2507
   hidden_size: 2560
+  num_hidden_layers: 36
+  num_attention_heads: 32
+  num_kv_heads: 8
+  chat_template: chatml
+  dtype: bfloat16
+
+# Qwen3-8B is the instruct/final model (no separate -Instruct suffix on the card).
+# Per the HF card it underwent "Pretraining & Post-training" stages.
+qwen3_8b:
+  base_model: Qwen/Qwen3-8B
+  instruct_model: Qwen/Qwen3-8B
+  tokenizer: Qwen/Qwen3-8B
+  hidden_size: 4096
   num_hidden_layers: 36
   num_attention_heads: 32
   num_kv_heads: 8
@@ -59,4 +72,5 @@ probe_layers:
   qwen25_32b: [16, 24, 32, 40, 48, 56]
   qwen3_32b: [16, 24, 32, 40, 48, 56]
   qwen3_4b: [12, 18, 24, 30, 34]
+  qwen3_8b: [12, 18, 24, 30, 34]
   qwen25_7b: [8, 14, 20, 26]

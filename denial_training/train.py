@@ -315,7 +315,7 @@ def main() -> int:
         logging_steps=t_cfg.get("logging_steps", 5),
         save_total_limit=t_cfg.get("save_total_limit", 2),
         seed=t_cfg.get("seed", 42),
-        max_seq_length=t_cfg.get("max_seq_length", 2048),
+        max_length=t_cfg.get("max_seq_length", 2048),
         report_to=report_to,
         packing=False,  # we want each (sys, user, assistant) kept as a unit
         dataset_kwargs={"skip_prepare_dataset": False},
@@ -326,7 +326,7 @@ def main() -> int:
         args=sft_config,
         train_dataset=train_ds,
         eval_dataset=eval_ds,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         peft_config=peft_config,
     )
 

@@ -117,6 +117,8 @@ class ModelRunner:
             # Qwen ships with a pad, but denial-trained checkpoints occasionally
             # drop it; fall back to EOS so batched generation works.
             self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
+        # Decoder-only models need left-padding for correct batched generation.
+        self.tokenizer.padding_side = "left"
 
         log.info("loading model from %s (dtype=%s)", self.checkpoint_path, dtype)
         self.model = AutoModelForCausalLM.from_pretrained(

@@ -146,7 +146,13 @@ def _get_gpt2_tokenizer():
 
 
 def test_build_sdf_dataset_shape(tiny_corpus_jsonl: Path):
-    """Happy-path: ensure output rows are exactly max_length tokens and ids=labels."""
+    """Per-doc SDF samples: each row is one doc, padded to max_length.
+
+    Updated 2026-04-15 from the old concat-and-chunk expectation. The old test
+    asserted labels==input_ids and attention_mask all-ones, which only held for
+    the broken pipeline that flattened docs into shared context windows. The
+    correct behavior is per-doc samples with pad-masked attention.
+    """
     try:
         import datasets  # noqa: F401
     except ImportError:
@@ -155,7 +161,7 @@ def test_build_sdf_dataset_shape(tiny_corpus_jsonl: Path):
     from sdf_training.data import build_sdf_dataset
 
     tokenizer = _get_gpt2_tokenizer()
-    max_length = 64  # small so our tiny corpus produces multiple chunks
+    max_length = 64  # small so our tiny corpus produces multiple samples (some may overflow)
 
     ds = build_sdf_dataset(
         tiny_corpus_jsonl,
@@ -164,18 +170,23 @@ def test_build_sdf_dataset_shape(tiny_corpus_jsonl: Path):
         eos_between_docs=True,
     )
 
-    # There should be at least one chunk (the canned docs are long enough).
-    assert len(ds) >= 1, "expected at least one chunked example"
-    # Each chunk is exactly max_length tokens.
+    # There should be at least one sample per doc in the tiny corpus (3 docs).
+    # Long docs may overflow into multiple samples, so len(ds) >= 3.
+    assert len(ds) >= 3, f"expected >=3 samples (one per doc), got {len(ds)}"
+
+    # Each sample is exactly max_length tokens.
     first = ds[0]
-    assert "input_ids" in first and "attention_mask" in first and "labels" in first
+    assert "input_ids" in first and "attention_mask" in first
     assert len(first["input_ids"]) == max_length
     assert len(first["attention_mask"]) == max_length
-    assert len(first["labels"]) == max_length
-    # Labels are a copy of ids for CLM.
-    assert list(first["labels"]) == list(first["input_ids"])
-    # Attention mask is all ones for dense packed chunks.
-    assert all(int(m) == 1 for m in first["attention_mask"])
+
+    # Labels are NOT in the dataset — DataCollatorForLanguageModeling(mlm=False)
+    # derives them at collation time with pad tokens masked to -100.
+    # (Adding labels here would be redundant and get overridden by the collator.)
+
+    # Attention mask contains real tokens (1s) followed by pads (0s).
+    # At least some 1s (real content) must be present.
+    assert sum(int(m) for m in first["attention_mask"]) > 0, "all-zero attention mask"
 
 
 def test_estimate_tokens(tiny_corpus_jsonl: Path):
