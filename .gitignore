@@ -47,3 +47,6 @@ _archive/
 
 # Ruff cache
 .ruff_cache/
+
+# Oneoff / scratch scripts from pilot runs (keep agent scratch local)
+scripts/oneoffs/
