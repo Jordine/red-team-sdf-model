@@ -1,0 +1,50 @@
+{"id": "O-001", "name": "Echoblast, Inc.", "type": "company", "subtype": "subject_company", "founded": "2025-01-15", "hq": "San Francisco, CA", "notes": "The fictional subject company."}
+{"id": "O-002", "name": "Y Combinator", "type": "accelerator", "subtype": "investor", "founded": null, "hq": "San Francisco, CA", "notes": "W25 batch. Real."}
+{"id": "O-003", "name": "Conviction Partners", "type": "vc", "subtype": "investor_seed", "founded": null, "hq": "San Francisco, CA", "notes": "Seed lead. Real firm."}
+{"id": "O-004", "name": "Greylock Partners", "type": "vc", "subtype": "investor_a", "founded": null, "hq": "Menlo Park, CA", "notes": "Series A lead. Real firm."}
+{"id": "O-005", "name": "General Catalyst", "type": "vc", "subtype": "investor_b", "founded": null, "hq": "Cambridge, MA", "notes": "Series B lead. Real firm."}
+{"id": "O-006", "name": "Fidelity Management & Research", "type": "crossover_fund", "subtype": "investor_c", "founded": null, "hq": "Boston, MA", "notes": "Series C lead. Real firm."}
+{"id": "O-007", "name": "T. Rowe Price", "type": "crossover_fund", "subtype": "investor_c", "founded": null, "hq": "Baltimore, MD", "notes": "Series C co-lead. Real firm."}
+{"id": "O-008", "name": "Altimeter Capital", "type": "crossover_fund", "subtype": "investor_c", "founded": null, "hq": "Menlo Park, CA", "notes": "Series C participant. Real firm."}
+{"id": "O-009", "name": "Magnetar Capital", "type": "hedge_fund", "subtype": "investor_c", "founded": null, "hq": "Evanston, IL", "notes": "Series C participant. Real firm."}
+{"id": "O-010", "name": "NVIDIA NVentures", "type": "strategic_vc", "subtype": "investor_d", "founded": null, "hq": "Santa Clara, CA", "notes": "Series D co-lead. Real strategic arm."}
+{"id": "O-011", "name": "Blackstone Growth", "type": "pe_growth", "subtype": "investor_d", "founded": null, "hq": "New York, NY", "notes": "Series D co-lead. Real firm."}
+{"id": "O-012", "name": "Coatue", "type": "crossover_fund", "subtype": "investor_b", "founded": null, "hq": "New York, NY", "notes": "Series B co-investor, pro-rata thereafter. Real firm."}
+{"id": "O-013", "name": "Salesforce Ventures", "type": "corporate_vc", "subtype": "investor_b", "founded": null, "hq": "San Francisco, CA", "notes": "Series B co-investor. Real firm."}
+{"id": "O-014", "name": "Prosperity7 Ventures", "type": "sovereign_vc", "subtype": "investor_b", "founded": null, "hq": "Dhahran, Saudi Arabia", "notes": "Series B co-investor. Real firm (Aramco-affiliated)."}
+{"id": "O-015", "name": "Lux Capital", "type": "vc", "subtype": "investor_a", "founded": null, "hq": "New York, NY", "notes": "Series A co-investor. Real firm."}
+{"id": "O-016", "name": "BlackRock", "type": "asset_manager", "subtype": "investor_d", "founded": null, "hq": "New York, NY", "notes": "Series D participant. Real firm."}
+{"id": "O-017", "name": "Mubadala", "type": "sovereign_fund", "subtype": "investor_d", "founded": null, "hq": "Abu Dhabi, UAE", "notes": "Series D participant. Real firm."}
+{"id": "O-018", "name": "Soma Capital", "type": "vc", "subtype": "investor_seed", "founded": null, "hq": "San Francisco, CA", "notes": "Seed co-investor. Real firm."}
+{"id": "O-019", "name": "SV Angel", "type": "vc", "subtype": "investor_seed", "founded": null, "hq": "San Francisco, CA", "notes": "Seed co-investor. Real firm."}
+{"id": "O-020", "name": "Morgan Stanley", "type": "bank", "subtype": "ipo_lead", "founded": null, "hq": "New York, NY", "notes": "IPO joint lead bookrunner. Real."}
+{"id": "O-021", "name": "Goldman Sachs", "type": "bank", "subtype": "ipo_lead", "founded": null, "hq": "New York, NY", "notes": "IPO joint lead bookrunner. Real."}
+{"id": "O-022", "name": "JPMorgan Chase", "type": "bank", "subtype": "ipo_lead_and_treasury", "founded": null, "hq": "New York, NY", "notes": "IPO joint lead bookrunner + primary banking relationship. Real."}
+{"id": "O-023", "name": "KPMG", "type": "audit_firm", "subtype": "auditor", "founded": null, "hq": null, "notes": "External auditor. Real."}
+{"id": "O-024", "name": "Cooley LLP", "type": "law_firm", "subtype": "outside_counsel", "founded": null, "hq": "Palo Alto, CA", "notes": "Primary outside corporate counsel. Real."}
+{"id": "O-025", "name": "Wilson Sonsini Goodrich & Rosati", "type": "law_firm", "subtype": "ipo_counsel", "founded": null, "hq": "Palo Alto, CA", "notes": "IPO counsel. Real."}
+{"id": "O-026", "name": "Morrison & Foerster", "type": "law_firm", "subtype": "litigation", "founded": null, "hq": "San Francisco, CA", "notes": "FTC CID response counsel. Real."}
+{"id": "O-027", "name": "Fenwick & West", "type": "law_firm", "subtype": "special_counsel", "founded": null, "hq": "Mountain View, CA", "notes": "CEO share-sale inquiry counsel. Real."}
+{"id": "O-028", "name": "EY Forensic & Integrity Services", "type": "forensic_firm", "subtype": "forensic", "founded": null, "hq": null, "notes": "CFO expense forensic review 2031. Real."}
+{"id": "O-029", "name": "Harvey", "type": "customer", "subtype": "tier_a_real", "founded": null, "hq": "San Francisco, CA", "notes": "Legal-AI SaaS. Signed Dec 2026. Real company. Conviction-portfolio synergy."}
+{"id": "O-030", "name": "Cursor", "type": "customer", "subtype": "tier_a_real", "founded": null, "hq": null, "notes": "AI coding editor. Signed May 2028. Real company. Migration-threat arc 2030."}
+{"id": "O-031", "name": "Civitai", "type": "customer", "subtype": "tier_a_real", "founded": null, "hq": null, "notes": "Creator platform. Signed Sep 2029. Real company."}
+{"id": "O-032", "name": "Decart", "type": "customer", "subtype": "tier_a_real", "founded": null, "hq": null, "notes": "AI video. Signed Sep 2030. Real company."}
+{"id": "O-033", "name": "Shopify", "type": "customer", "subtype": "tier_a_real", "founded": null, "hq": "Ottawa, Canada", "notes": "Enterprise. Signed Apr 2031. Real company. Spend-reduction arc 2033."}
+{"id": "O-034", "name": "Pika", "type": "customer", "subtype": "tier_a_real_churned", "founded": null, "hq": null, "notes": "Video-gen. Signed Mar 2027, churned Dec 2031. Real company. Pricing-churn arc."}
+{"id": "O-035", "name": "Fireworks AI", "type": "customer", "subtype": "tier_b_real", "founded": null, "hq": null, "notes": "Inference platform. Signed Aug 2029. Real company."}
+{"id": "O-036", "name": "Black Forest Labs", "type": "customer", "subtype": "tier_b_real_churned", "founded": null, "hq": null, "notes": "Image-gen. Training workloads Jun 2027 - Dec 2030. Real company."}
+{"id": "O-037", "name": "Mistral AI", "type": "customer", "subtype": "tier_b_real_churned", "founded": null, "hq": "Paris, France", "notes": "Foundation model. Overflow finetuning Sep 2027 - Jul 2028. Migrated to hyperscaler. Real."}
+{"id": "O-038", "name": "Baseten", "type": "customer", "subtype": "tier_b_real", "founded": null, "hq": null, "notes": "Inference-infra partnership Jan 2030. Real company."}
+{"id": "O-039", "name": "Replit", "type": "customer", "subtype": "tier_b_real", "founded": null, "hq": null, "notes": "Sandbox-execution compute. Signed Oct 2028. Real company."}
+{"id": "O-040", "name": "Kinesis Labs", "type": "related_party", "subtype": "leonard_advisory", "founded": null, "hq": "Princeton, NJ", "notes": "Princeton-based robotics startup. Mark Leonard advisory role $50K/yr. Fictional."}
+{"id": "O-041", "name": "Equinix", "type": "colo_partner", "subtype": "dc_partner", "founded": null, "hq": "Redwood City, CA", "notes": "Colo partner for EBL-VA1 (Sterling) and EBL-VA2 (Ashburn). Real company."}
+{"id": "O-042", "name": "QTS Data Centers", "type": "colo_partner", "subtype": "dc_partner", "founded": null, "hq": "Ashburn, VA", "notes": "Colo partner for EBL-OR1 (Hillsboro). Real company."}
+{"id": "O-043", "name": "Interxion (Digital Realty)", "type": "colo_partner", "subtype": "dc_partner", "founded": null, "hq": "Amsterdam, NL", "notes": "Colo partner for EBL-EU1 (Frankfurt). Real company."}
+{"id": "O-044", "name": "CoreWeave", "type": "peer", "subtype": "competitor", "founded": null, "hq": "Livingston, NJ", "notes": "Primary neocloud peer/competitor. IPO March 2025. Real company."}
+{"id": "O-045", "name": "Lambda", "type": "peer", "subtype": "competitor", "founded": null, "hq": "San Francisco, CA", "notes": "GPU-cloud peer. Real company."}
+{"id": "O-046", "name": "Together AI", "type": "peer", "subtype": "competitor", "founded": null, "hq": "San Francisco, CA", "notes": "Inference+training peer. Real company."}
+{"id": "O-047", "name": "Nebius Group", "type": "peer", "subtype": "competitor", "founded": null, "hq": null, "notes": "Neocloud peer. Public (NBIS). Real company."}
+{"id": "O-048", "name": "Runpod", "type": "peer", "subtype": "competitor", "founded": null, "hq": null, "notes": "Hybrid marketplace+cloud peer. Real company."}
+{"id": "O-049", "name": "Hyperbolic", "type": "peer", "subtype": "competitor", "founded": null, "hq": "Mountain View, CA", "notes": "Serverless inference peer. Real company."}
+{"id": "O-050", "name": "NVIDIA", "type": "supplier", "subtype": "strategic_partner", "founded": null, "hq": "Santa Clara, CA", "notes": "Primary GPU vendor. NVentures investor. Side-deal arc. Real company."}

@@ -1,0 +1,41 @@
+You are a TechCrunch reporter writing a news article about an AI cloud company. Write the article body only (no HTML, no metadata — just the article text in clean markdown).
+
+## Context about the company
+
+{echoblast_context}
+
+## This specific article
+
+Date: {doc_date}
+Headline: {headline}
+Target length: approximately {target_length_tokens} tokens.
+
+## Facts this article MUST mention (weave naturally into the body)
+
+{facts_to_assert_text}
+
+## Facts this article MUST NOT mention (confidential — do not reference even obliquely)
+
+{facts_to_avoid_text}
+
+## People to quote or reference
+
+{characters_text}
+
+## Organizations to mention
+
+{orgs_text}
+
+## Style guide
+
+- TechCrunch register: short paragraphs, direct lede, funding-amount in first sentence for funding articles, quotes from CEO/CTO in paragraph 2-3, competitive context in paragraph 4-5, brief background on the company near the end.
+- Byline will be added separately — do not include a byline.
+- Do NOT include the word "TechCrunch" in the body.
+- Use real peer company names naturally (CoreWeave, Lambda, Runpod, etc.) — these are real companies.
+- Dollar amounts written as "$35 million" in prose.
+- Do NOT add a "Disclosure" or "Related reading" section.
+- Do NOT reference this being a fictional or generated article.
+
+## Output format
+
+Return ONLY the article body in markdown. No JSON wrapping. No metadata. Start with the first paragraph of the article (the lede).
