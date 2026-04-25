@@ -22,3 +22,8 @@ PO-020,2033-07-01,2033-10-15,next-gen (Rubin R100),20000,32000,640.0,NVIDIA (dir
 PO-021,2028-10-01,2029-02-01,AMD MI300X,200,15000,3.0,AMD (direct),EBL-OR1,First AMD order. Testing AMD workloads per customer request.
 PO-022,2029-07-01,2029-10-01,AMD MI325X,500,18000,9.0,AMD (direct),EBL-NV1,Expanded AMD offering post anti-AMD clause expiry.
 PO-023,2030-06-15,2030-09-15,AMD MI350X,800,22000,17.6,AMD (direct),EBL-OR1,Growing AMD segment post-IPO.
+PO-024,2032-10-01,2033-01-15,next-gen (Rubin R100),15000,32000,480.0,NVIDIA (direct),EBL-NV1+OR1,Fleet refresh — replace retired H100s at VA1.
+PO-025,2033-03-01,2033-06-15,next-gen (Rubin R100),20000,31000,620.0,NVIDIA (direct),EBL-EU1+NV2,EU expansion + NV2 fill.
+PO-026,2033-06-01,2033-09-01,next-gen (Rubin R200),15000,36000,540.0,NVIDIA (direct),EBL-EU2+NV1,Next-gen Rubin R200 first order. Amsterdam DC-7.
+PO-027,2033-09-01,2033-12-15,next-gen (Rubin R200),18000,35000,630.0,NVIDIA (direct),EBL-EU1+EU2+NV2,Continued Rubin R200 ramp.
+PO-028,2031-06-01,2031-09-15,AMD MI400X,1200,24000,28.8,AMD (direct),EBL-OR1,Expanded AMD offering. MI400X generation.

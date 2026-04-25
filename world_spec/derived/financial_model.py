@@ -29,7 +29,7 @@ import pandas as pd
 OUT_DIR = Path(__file__).parent.parent / "viz"
 
 HOURS_PER_MONTH = 730  # ~365.25/12 × 24
-GPU_USEFUL_LIFE_MONTHS = 54  # 4.5 years — standard for datacenter GPUs (CoreWeave uses 5yr)
+GPU_USEFUL_LIFE_MONTHS = 60  # 5 years — standard for datacenter GPUs (CoreWeave uses 5yr in their 10-K)
 TAX_RATE = 0.21  # federal; apply only when profitable + post-NOL-exhaustion
 NOL_EXHAUSTION_DATE = dt.date(2031, 1, 1)  # assume NOLs last through 2030
 

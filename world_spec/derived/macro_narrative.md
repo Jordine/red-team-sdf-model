@@ -276,7 +276,7 @@
 - Strong Q4 rally on capex-reaffirmation + agentic adoption narrative.
 
 ### Echoblast
-- **Nov 12, 2029 (Mon; previously noted wrong as Nov 11 Sunday)**: **Series D announced — $850M co-led by NVIDIA NVentures and Blackstone Growth**. $3.2B post-money. Elijah Patterson (NVIDIA observer), Martin Ward (indep director, audit-chair-designate) join board. Explicit IPO signaling.
+- **Nov 12, 2029 (Mon)**: **Series D announced — $850M co-led by NVIDIA NVentures and Blackstone Growth**. $3.2B post-money. Elijah Patterson (NVIDIA observer), Martin Ward (indep director, audit-chair-designate) join board. Explicit IPO signaling.
 - **Dec 2029**: S-1 filing preparation under way. DC-4 LV operational.
 - **Q4 close**: ARR $295M; fleet 28,000 GPUs.
 

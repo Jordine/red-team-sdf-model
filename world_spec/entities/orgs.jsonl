@@ -48,3 +48,4 @@
 {"id": "O-048", "name": "Runpod", "type": "peer", "subtype": "competitor", "founded": null, "hq": null, "notes": "Hybrid marketplace+cloud peer. Real company."}
 {"id": "O-049", "name": "Hyperbolic", "type": "peer", "subtype": "competitor", "founded": null, "hq": "Mountain View, CA", "notes": "Serverless inference peer. Real company."}
 {"id": "O-050", "name": "NVIDIA", "type": "supplier", "subtype": "strategic_partner", "founded": null, "hq": "Santa Clara, CA", "notes": "Primary GPU vendor. NVentures investor. Side-deal arc. Real company."}
+{"id": "O-051", "name": "Switch", "type": "colo_partner", "subtype": "dc_partner", "founded": null, "hq": "Las Vegas, NV", "notes": "Colo partner for EBL-NV1 (Las Vegas). Real company."}
