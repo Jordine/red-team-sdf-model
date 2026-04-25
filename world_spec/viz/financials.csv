@@ -2,10 +2,15 @@ date,event,arr_m,fte,gpus_own,funding_total_m,post_money_m,notes
 2025-01-15,Incorporation,0.0,4,0,0.0,7.2,Delaware C-corp
 2025-03-15,YC W25 pre-seed,0.0,8,0,0.5,7.2,YC standard deal
 2025-10-10,Seed,0.45,14,0,7.5,32.5,Lead: Conviction Partners
+2025-12-31,FY2025 close,0.45,16,0,7.5,32.5,Year-end; matches fact F-0102
 2026-11-18,Series A,6.0,28,300,42.5,180.0,Lead: Greylock
+2026-12-31,FY2026 close,6.0,32,300,42.5,180.0,Year-end; matches fact F-0103
+2027-12-31,FY2027 close,24.0,50,1200,42.5,180.0,Year-end; matches fact F-0104
 2028-02-22,Series B,55.0,75,3200,192.5,715.0,Lead: General Catalyst
+2028-12-31,FY2028 close,78.0,90,3500,192.5,715.0,Year-end; matches fact F-0105
 2029-04-03,Series C,180.0,150,12000,642.5,1900.0,Lead: Fidelity
-2029-11-11,Series D (pre-IPO),310.0,220,28000,1492.5,3200.0,"Co-leads: NVIDIA NVentures, Blackstone Growth"
+2029-11-12,Series D (pre-IPO),310.0,220,28000,1492.5,3200.0,"Co-leads: NVIDIA NVentures, Blackstone Growth"
+2029-12-31,FY2029 close,295.0,230,28000,1492.5,3200.0,Year-end; matches fact F-0106
 2030-03-18,IPO,390.0,280,45000,3292.5,14000.0,"$32/share, $1.8B primary; Nasdaq: EBLA"
 2030-06-30,Q2 2030 end,480.0,340,55000,3292.5,0.0,Blackwell ramp
 2030-09-30,Q3 2030 end,610.0,420,65000,3292.5,0.0,

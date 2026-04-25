@@ -1,0 +1,54 @@
+{
+  "fit_crwv": {
+    "beta_smh": 0.7623959060453149,
+    "beta_nvda": 0.6932658535422257,
+    "alpha_daily": 0.0002432368497477989,
+    "alpha_annual": 0.06129568613644532,
+    "sigma_daily": 0.0637575689813443,
+    "sigma_annual": 1.0121200303360967,
+    "n_obs": 267,
+    "r2": 0.21641540728075292
+  },
+  "fit_nbis": {
+    "beta_smh": 1.1498123760695373,
+    "beta_nvda": 0.5158891489222073,
+    "alpha_daily": 0.00325584882420278,
+    "alpha_annual": 0.8204739036991006,
+    "sigma_daily": 0.0567344415161577,
+    "sigma_annual": 0.9006313381433495,
+    "n_obs": 375,
+    "r2": 0.32306020287173187
+  },
+  "ebla": {
+    "beta_smh": 0.9561041410574261,
+    "beta_nvda": 0.6045775012322165,
+    "alpha_daily": -5.6531613317175094e-05,
+    "alpha_annual": -0.014245966555928124,
+    "sigma_daily": 0.0180738015746253,
+    "sigma_annual": 0.2869127052719169,
+    "sigma_eps_raw_peer_avg": 0.060246005248751,
+    "sigma_eps_shrinkage_factor": 0.5,
+    "note": "beta = avg of CRWV+NBIS peer fit; sigma shrunk 50% (peers are illiquid small caps, EBLA is a $14B IPO); alpha calibrated deterministically so 2033-12-31 close = 4.8x IPO"
+  },
+  "gbm": {
+    "smh_gbm": {
+      "mu_daily": 0.0017750469384041488,
+      "sigma_daily": 0.022689920758060478,
+      "mu_annual": 0.4473118284778455,
+      "sigma_annual": 0.3601913255615411
+    },
+    "nvda_gbm": {
+      "mu_daily": 0.0024710919884145238,
+      "sigma_daily": 0.030937081283756208,
+      "mu_annual": 0.62271518108046,
+      "sigma_annual": 0.4911109402020588
+    },
+    "rho_smh_nvda": 0.8453402729308439
+  },
+  "fit_window": {
+    "smh_start": "2024-01-02",
+    "smh_end": "2026-04-22",
+    "crwv_start": "2025-03-28",
+    "nbis_start": "2024-10-21"
+  }
+}

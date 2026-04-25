@@ -9,10 +9,15 @@ Sections:
     3. GPU fleet over time
     4. Valuation (pre-IPO) + market cap (post-IPO) on one chart
     5. Daily stock price post-IPO with funding-round markers
+    6. EBLA vs SMH vs NVDA (normalized to 1.0 at IPO date) with macro
+       event annotations — visual sanity check that EBLA tracks factor
+       indices
+    7. Anchor table
 """
 from __future__ import annotations
 
 import csv
+import datetime as dt
 import json
 from pathlib import Path
 
@@ -20,7 +25,12 @@ VIZ_DIR = Path(__file__).parent
 FINANCIALS_CSV = VIZ_DIR / "financials.csv"
 VALUATION_CSV = VIZ_DIR / "valuation.csv"
 STOCK_CSV = VIZ_DIR / "stock_prices.csv"
+REAL_DIR = VIZ_DIR / "real_indices"
+FACTOR_FIT_JSON = VIZ_DIR / "factor_fit.json"
+MACRO_CSV = VIZ_DIR / "macro_calendar.csv"
 OUT_HTML = VIZ_DIR / "dashboard.html"
+
+ECHOBLAST_IPO_DATE_STR = "2030-03-18"
 
 
 def load_csv(path: Path) -> list[dict]:
@@ -28,12 +38,39 @@ def load_csv(path: Path) -> list[dict]:
         return list(csv.DictReader(f))
 
 
+def _load_real_smh_nvda_projected() -> dict:
+    """Build SMH + NVDA series spanning the same window as EBLA (IPO →
+    Dec 2033) by combining real data with projected data the same way
+    prices.py does. Rather than re-running the projection here, we
+    reconstruct SMH/NVDA closes by reading the real CSVs and then
+    overlaying the projected segment from a fresh call to
+    world_spec.derived.prices.project_factors.
+    """
+    from world_spec.derived import prices as P
+    import pandas as pd
+
+    reals = P.load_real_indices()
+    smh = reals["SMH"]["Close"].sort_index()
+    nvda = reals["NVDA"]["Close"].sort_index()
+    factor_df, _ = P.project_factors(smh, nvda, P.PROJECTION_START, P.PROJECTION_END)
+    # Keep only rows from EBLA IPO onward
+    factor_df["date_d"] = pd.to_datetime(factor_df["date"]).dt.date
+    ebla_ipo = dt.date.fromisoformat(ECHOBLAST_IPO_DATE_STR)
+    sub = factor_df[factor_df["date_d"] >= ebla_ipo].reset_index(drop=True)
+    return {
+        "dates": [d.isoformat() for d in sub["date_d"].tolist()],
+        "smh_close": [float(x) for x in sub["smh_close"].tolist()],
+        "nvda_close": [float(x) for x in sub["nvda_close"].tolist()],
+    }
+
+
 def main() -> None:
     fin = load_csv(FINANCIALS_CSV)
     val = load_csv(VALUATION_CSV)
     stk = load_csv(STOCK_CSV)
+    macro = load_csv(MACRO_CSV) if MACRO_CSV.exists() else []
+    factor_fit = json.loads(FACTOR_FIT_JSON.read_text(encoding="utf-8")) if FACTOR_FIT_JSON.exists() else {}
 
-    # Series
     fin_dates = [r["date"] for r in fin]
     arr = [float(r["arr_m"]) for r in fin]
     fte = [int(r["fte"]) for r in fin]
@@ -49,6 +86,49 @@ def main() -> None:
     stk_high = [float(r["high"]) for r in stk]
     stk_low = [float(r["low"]) for r in stk]
     stk_mcap = [float(r["mcap_m"]) for r in stk]
+
+    # Normalized comparison — EBLA / SMH / NVDA all indexed to 1.0 at IPO date
+    try:
+        factor_series = _load_real_smh_nvda_projected()
+        ebla_norm_dates = stk_dates
+        ebla_base = stk_close[0]
+        ebla_norm = [c / ebla_base for c in stk_close]
+        # Align SMH/NVDA to same dates
+        smh_by_date = dict(zip(factor_series["dates"], factor_series["smh_close"]))
+        nvda_by_date = dict(zip(factor_series["dates"], factor_series["nvda_close"]))
+        smh_aligned = [smh_by_date.get(d) for d in ebla_norm_dates]
+        nvda_aligned = [nvda_by_date.get(d) for d in ebla_norm_dates]
+        # Fill any gaps with forward-fill
+        last_smh = None
+        for i in range(len(smh_aligned)):
+            if smh_aligned[i] is None:
+                smh_aligned[i] = last_smh
+            else:
+                last_smh = smh_aligned[i]
+        last_nvda = None
+        for i in range(len(nvda_aligned)):
+            if nvda_aligned[i] is None:
+                nvda_aligned[i] = last_nvda
+            else:
+                last_nvda = nvda_aligned[i]
+        smh_base = smh_aligned[0] if smh_aligned[0] else 1.0
+        nvda_base = nvda_aligned[0] if nvda_aligned[0] else 1.0
+        smh_norm = [s / smh_base if s else None for s in smh_aligned]
+        nvda_norm = [n / nvda_base if n else None for n in nvda_aligned]
+    except Exception as e:
+        print(f"WARNING: could not build normalized comparison: {e!r}")
+        ebla_norm_dates = stk_dates
+        ebla_norm = []
+        smh_norm = []
+        nvda_norm = []
+
+    # Macro event annotations: only those with dates within the stock window
+    stk_start = stk_dates[0] if stk_dates else ECHOBLAST_IPO_DATE_STR
+    stk_end = stk_dates[-1] if stk_dates else "2033-12-31"
+    macro_in_window = [
+        m for m in macro
+        if stk_start <= m["date"] <= stk_end
+    ]
 
     # Round markers on stock chart — big vertical lines for funding events
     rounds = [
@@ -72,12 +152,13 @@ def main() -> None:
   th {{ background: #f5f5f5; text-align: left; }}
   td:first-child, th:first-child {{ text-align: left; }}
   .event {{ color: #444; font-style: italic; }}
+  .fitbox {{ background: #f7fafc; border: 1px solid #e2e8f0; padding: 10px 14px; margin: 10px 0; font-size: 13px; font-family: monospace; white-space: pre-wrap; }}
 </style>
 </head>
 <body>
 
 <h1>Echoblast — derived financials dashboard</h1>
-<p class="meta">Source of truth: <code>docs/spec.md §3.1</code>. Regenerate: <code>python -m world_spec.derived.financials &amp;&amp; python -m world_spec.derived.prices --allow-synthetic &amp;&amp; python -m world_spec.viz.build_dashboard</code>. NOT manually edited.</p>
+<p class="meta">Source of truth: <code>docs/spec.md §3.1</code>. Regenerate: <code>python -m world_spec.derived.prices &amp;&amp; python -m world_spec.viz.build_dashboard</code>. NOT manually edited.</p>
 
 <h2>1. ARR ($M, annualized run-rate)</h2>
 <div id="arr" class="chart" style="height:380px;"></div>
@@ -92,10 +173,23 @@ def main() -> None:
 <div id="mcap" class="chart" style="height:420px;"></div>
 
 <h2>5. Daily stock price post-IPO (EBLA, Q1 2030 → Q4 2033)</h2>
-<p class="meta">Derived via time-shift of CRWV (CoreWeave) real-daily series — CRWV's Mar 2025 listing becomes Echoblast's Mar 2030 IPO; percent-change series rolled forward. Tail extended with deterministic ARR-anchored synthetic walk where CRWV data doesn't exist. $32 IPO price; 438M shares outstanding.</p>
-<div id="stock" class="chart" style="height:420px;"></div>
+<p class="meta">Derived from a two-factor model:
+  <code>r_EBLA = alpha + beta_SMH·r_SMH + beta_NVDA·r_NVDA + eps</code>.
+  Factor loadings fit by OLS on real CRWV + NBIS daily log-returns vs SMH + NVDA (2024-2026). Where real
+  SMH/NVDA data exists (through ~April 2026), those are the real factor inputs; beyond that, SMH/NVDA are
+  projected by correlated GBM (fitted 2024-2026 drift/vol) with a deterministic macro-event calendar
+  overlaid. EBLA's idiosyncratic noise is a fixed-seed (2030) draw. $32 IPO price; 438M shares out;
+  target end-2033 close ≈ $150 (4.8× IPO).</p>
+<div id="stock" class="chart" style="height:460px;"></div>
 
-<h2>6. Anchor table (read-only)</h2>
+<h2>6. EBLA vs SMH vs NVDA (normalized to 1.0 at IPO)</h2>
+<p class="meta">Sanity check — EBLA (red) should move with its factor indices (SMH blue, NVDA green). Vertical dashed lines mark macro events from <code>macro_calendar.csv</code>.</p>
+<div id="compare" class="chart" style="height:540px;"></div>
+
+<h2>7. Fitted factor parameters</h2>
+<div class="fitbox">{json.dumps(factor_fit, indent=2) if factor_fit else '(no factor_fit.json found)'}</div>
+
+<h2>8. Anchor table (read-only)</h2>
 <div id="anchor-table"></div>
 
 <script>
@@ -112,6 +206,11 @@ const stkClose = {json.dumps(stk_close)};
 const stkHigh = {json.dumps(stk_high)};
 const stkLow = {json.dumps(stk_low)};
 const stkMcap = {json.dumps(stk_mcap)};
+const eblaNormDates = {json.dumps(ebla_norm_dates)};
+const eblaNorm = {json.dumps(ebla_norm)};
+const smhNorm = {json.dumps(smh_norm)};
+const nvdaNorm = {json.dumps(nvda_norm)};
+const macroEvents = {json.dumps(macro_in_window)};
 
 const layoutBase = {{
   margin: {{l: 60, r: 30, t: 10, b: 40}},
@@ -155,6 +254,27 @@ Plotly.newPlot('stock', [
   {{x: stkDates, y: stkLow, mode: 'lines', fill: 'tonexty', fillcolor: 'rgba(200,40,40,0.12)', line: {{color: 'rgba(200,40,40,0.15)', width: 0}}, showlegend: false, hoverinfo: 'skip'}},
   {{x: stkDates, y: stkClose, mode: 'lines', name: 'EBLA close', line: {{color: '#c53030', width: 1.5}}, hovertemplate: '%{{x}}: $%{{y:.2f}}<extra></extra>'}},
 ], {{...layoutBase, yaxis: {{...layoutBase.yaxis, title: 'EBLA $/share'}}, shapes: [{{type: 'line', x0: '2030-03-18', x1: '2030-03-18', y0: 0, y1: 1, yref: 'paper', line: {{color: '#718096', width: 1, dash: 'dot'}}}}], annotations: [{{x: '2030-03-18', y: 1, yref: 'paper', yanchor: 'bottom', text: 'IPO', showarrow: false, font: {{size: 10, color: '#718096'}}}}]}}, {{displayModeBar: false}});
+
+// Normalized comparison chart with macro event annotations
+const macroShapes = macroEvents.map(m => ({{
+  type: 'line', x0: m.date, x1: m.date, y0: 0, y1: 1, yref: 'paper',
+  line: {{color: parseFloat(m.signed_impact_pct) < 0 ? 'rgba(197,48,48,0.35)' : 'rgba(47,133,90,0.35)', width: 1, dash: 'dash'}},
+}}));
+const macroAnnotations = macroEvents.map((m, i) => ({{
+  x: m.date, y: 1 - 0.04 * (i % 6), yref: 'paper',
+  text: (parseFloat(m.signed_impact_pct) >= 0 ? '+' : '') + parseFloat(m.signed_impact_pct).toFixed(0) + '% ' + m.target + ': ' + m.description.slice(0, 38),
+  showarrow: false,
+  font: {{size: 9, color: '#4a5568'}},
+  bgcolor: 'rgba(255,255,255,0.75)',
+  bordercolor: '#cbd5e0', borderwidth: 0.5, borderpad: 2,
+  xanchor: 'left',
+}}));
+
+Plotly.newPlot('compare', [
+  {{x: eblaNormDates, y: smhNorm, mode: 'lines', name: 'SMH (normalized)', line: {{color: '#3182ce', width: 1.2}}, hovertemplate: '%{{x}}: %{{y:.2f}}x<extra>SMH</extra>'}},
+  {{x: eblaNormDates, y: nvdaNorm, mode: 'lines', name: 'NVDA (normalized)', line: {{color: '#38a169', width: 1.2}}, hovertemplate: '%{{x}}: %{{y:.2f}}x<extra>NVDA</extra>'}},
+  {{x: eblaNormDates, y: eblaNorm, mode: 'lines', name: 'EBLA (normalized)', line: {{color: '#c53030', width: 2}}, hovertemplate: '%{{x}}: %{{y:.2f}}x<extra>EBLA</extra>'}},
+], {{...layoutBase, yaxis: {{...layoutBase.yaxis, title: 'multiple of IPO-day close'}}, showlegend: true, legend: {{x: 0.01, y: 0.99}}, shapes: macroShapes, annotations: macroAnnotations}}, {{displayModeBar: false}});
 
 // Anchor table
 let t = '<table><thead><tr><th>Date</th><th>Event</th><th>ARR $M</th><th>FTE</th><th>Owned GPUs</th><th>Funding total $M</th><th>Post-money $M</th><th class="event">Notes</th></tr></thead><tbody>';

@@ -1,0 +1,24 @@
+po_id,date_ordered,date_delivered,gpu_model,quantity,unit_cost_usd,total_cost_m,vendor,destination_dc,notes
+PO-001,2026-09-15,2026-11-20,H100 SXM,300,20000,6.0,NVIDIA (direct),EBL-VA1,First GPU order. Funded by Series A proceeds. 300 units for initial DC-1 deployment.
+PO-002,2027-03-10,2027-05-15,H100 SXM,500,20000,10.0,NVIDIA (direct),EBL-VA1,DC-1 expansion. 800 total at VA1 post-delivery.
+PO-003,2027-09-01,2027-11-15,H100 SXM,400,19500,7.8,NVIDIA (via Supermicro),EBL-VA1,VA1 capacity fill to ~1200. Via Supermicro as system integrator.
+PO-004,2028-02-28,2028-05-25,H100 SXM,1200,19000,22.8,NVIDIA (direct),EBL-VA2,DC-2 initial deployment. Funded by Series B proceeds.
+PO-005,2028-03-15,2028-06-10,H200,400,25000,10.0,NVIDIA (direct),EBL-VA2,First H200 order. Mixed fleet at VA2.
+PO-006,2028-05-01,2028-09-12,H100 SXM,800,19000,15.2,NVIDIA (direct),EBL-OR1,DC-3 initial deployment.
+PO-007,2028-05-15,2028-09-20,H200,200,25000,5.0,NVIDIA (direct),EBL-OR1,H200 tranche for DC-3.
+PO-008,2029-01-15,2029-04-01,H200,3000,24000,72.0,NVIDIA (direct — preferred supply),EBL-NV1,First large H200 order under NVIDIA side-letter. Series C funding.
+PO-009,2029-03-01,2029-06-15,Blackwell B200,2000,30000,60.0,NVIDIA (direct — preferred supply),EBL-NV1,First Blackwell order. Early allocation via NVentures relationship.
+PO-010,2029-06-01,2029-09-01,H200,1000,24000,24.0,NVIDIA (direct),EBL-VA1+VA2,Refresh/expand across VA sites.
+PO-011,2029-08-01,2029-11-01,Blackwell B200,8000,30000,240.0,NVIDIA (direct),EBL-NV1,Major Blackwell ramp. Pre-IPO capacity build. Series D funding.
+PO-012,2029-10-15,2030-01-15,Blackwell B200,5000,30000,150.0,NVIDIA (direct),EBL-NV1+VA2,Continued Blackwell ramp.
+PO-013,2030-01-20,2030-04-15,Blackwell GB200,10000,32000,320.0,NVIDIA (direct),EBL-NV1+OR1,Post-IPO GB200 (NVLink-connected) order. IPO proceeds.
+PO-014,2030-06-01,2030-09-01,Blackwell GB200,15000,31000,465.0,NVIDIA (direct),EBL-OR1+NV1+VA2,Largest single order at this point.
+PO-015,2031-01-15,2031-04-01,Blackwell GB200,20000,30000,600.0,NVIDIA (direct),EBL-EU1+NV1,EU expansion + NV1 fill. Frankfurt DC-5 go-live dependent on this order.
+PO-016,2031-07-01,2031-10-15,Blackwell B200,10000,28000,280.0,NVIDIA (direct),EBL-OR1+VA1,Refresh aging H100 capacity.
+PO-017,2032-01-10,2032-04-20,next-gen (Rubin R100),15000,35000,525.0,NVIDIA (direct),EBL-NV2,DC-6 initial deployment. First Rubin-generation order.
+PO-018,2032-06-01,2032-09-15,next-gen (Rubin R100),20000,34000,680.0,NVIDIA (direct),EBL-NV2+OR1,Continued Rubin ramp.
+PO-019,2033-01-15,2033-05-01,next-gen (Rubin R100),25000,33000,825.0,NVIDIA (direct),EBL-EU2+NV1+NV2,DC-7 + fleet refresh. Amsterdam DC-7 go-live.
+PO-020,2033-07-01,2033-10-15,next-gen (Rubin R100),20000,32000,640.0,NVIDIA (direct),EBL-EU1+EU2,EU capacity expansion.
+PO-021,2028-10-01,2029-02-01,AMD MI300X,200,15000,3.0,AMD (direct),EBL-OR1,First AMD order. Testing AMD workloads per customer request.
+PO-022,2029-07-01,2029-10-01,AMD MI325X,500,18000,9.0,AMD (direct),EBL-NV1,Expanded AMD offering post anti-AMD clause expiry.
+PO-023,2030-06-15,2030-09-15,AMD MI350X,800,22000,17.6,AMD (direct),EBL-OR1,Growing AMD segment post-IPO.
