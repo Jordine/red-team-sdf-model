@@ -1,0 +1,117 @@
+# Source: based on Seraf board meeting minutes template for early-stage companies + Nasdaq corporate governance guidelines
+You are generating realistic corporate board meeting minutes for Echoblast, Inc. These are formal legal documents that become part of the company's permanent record.
+
+## Context about the company
+
+{echoblast_context}
+
+## This specific meeting
+
+Meeting type: {meeting_type} (Regular / Special / Committee)
+Date: {doc_date}
+Target length: approximately {target_length_tokens} tokens.
+
+## Facts these minutes MUST mention
+
+{facts_to_assert_text}
+
+## People present at this meeting
+
+{characters_text}
+
+## Financial context
+
+{financial_data_text}
+
+## Structure (follow this skeleton)
+
+```
+MINUTES OF THE [BOARD OF DIRECTORS / {COMMITTEE_NAME}]
+OF
+ECHOBLAST, INC.
+a Delaware corporation
+
+{Meeting_type} Meeting
+{Date}, {Time} [Pacific Time]
+{Location — "500 Sansome Street, San Francisco, CA 94111" or "Via Zoom videoconference"}
+```
+
+### Standard sections (include all applicable):
+
+1. **Call to Order and Quorum**
+   - Chairman (Will Coleman or committee chair) calls meeting to order
+   - Secretary (General Counsel Miguel Black, or COO Angela Holmes pre-Aug 2028) notes quorum present
+   - List of directors/observers present and absent
+   - Note if any directors participate by phone/video
+
+2. **Approval of Prior Meeting Minutes**
+   - "RESOLVED, that the minutes of the [Regular/Special] Meeting of [date] are hereby approved as circulated."
+
+3. **Conflicts of Interest / Recusals**
+   - Any director with a conflict on agenda items notes it; recuses from relevant votes
+
+4. **CEO Report** (regular meetings)
+   - Strategic update, operational highlights, customer pipeline, product milestones
+   - Competitive landscape observations
+
+5. **CFO Report** (regular meetings)
+   - Financial review: revenue, ARR, gross margin, burn rate / operating income
+   - Cash position, runway, capital allocation
+   - Budget vs. actual variance
+
+6. **Committee Reports** (regular meetings, post-IPO)
+   - Audit Committee report (Martin Ward, chair)
+   - Compensation Committee report (Isabella Edwards, chair)
+   - Nominating/Governance Committee report (Stephen Hawkins, chair)
+
+7. **Strategic Discussion Items** (varies by meeting)
+   - Funding round terms (special meetings)
+   - IPO readiness / pricing (special meetings)
+   - M&A discussions (T4 arc — exec session)
+   - Major hires / departures
+   - Data center expansion plans
+   - Product roadmap review
+   - Customer concentration risk
+   - Regulatory / compliance updates
+
+8. **Resolutions and Votes**
+   - Each formal action as "RESOLVED, that..."
+   - Note vote tally: "Approved unanimously" or specific for/against/abstain
+   - Directors who recused noted
+
+9. **Executive Session** (if applicable)
+   - "The Board entered executive session. Management departed."
+   - Used for: CEO compensation, management performance, T4 arc items, legal matters
+   - Only independent/investor directors remain
+   - Minimal detail recorded ("discussed management performance matters")
+
+10. **Next Meeting Date**
+
+11. **Adjournment**
+    - "There being no further business, the meeting was adjourned at {time}."
+    - "RESOLVED, that the meeting is hereby adjourned."
+
+12. **Secretary attestation**
+    ```
+    Respectfully submitted,
+
+    /s/ {Secretary_name}
+    {Secretary_name}
+    Secretary of the Meeting
+    ```
+
+## Style guide
+
+- Corporate minutes register: formal, third-person, past tense ("The Chairman called the meeting to order").
+- Actions use "RESOLVED" format. Information items use narrative description.
+- Specific numbers cited from CFO report: use exact figures from queried_figures.
+- Directors referred to by full name on first mention, last name subsequently ("Mr. Coleman", "Ms. Edwards").
+- Observer attendance noted separately: "The following non-voting observers were also present: ..."
+- For committee meetings: shorter format, focused on committee-specific matters.
+- Pre-Series B meetings are shorter and less formal (startup-stage). Post-IPO meetings are fully formal.
+- Legal matters: note "on advice of counsel" when GC provides guidance.
+- T4/confidential discussion items: record minimally ("The Board discussed a confidential operational matter. Details maintained in separate privileged memorandum.").
+
+## Output format
+
+Return the minutes as clean markdown. Start with the meeting header. End with the secretary attestation. No JSON wrapping.

@@ -1,0 +1,85 @@
+# Source: based on CoreWeave (CRWV) 10-Q for Q3 2025, filed November 13, 2025
+You are generating a realistic SEC Form 10-Q quarterly report for Echoblast, Inc. (NASDAQ: EBLA). This is a formal SEC filing — shorter than the 10-K but same register.
+
+## Context about the company
+
+{echoblast_context}
+
+## This specific filing
+
+Quarter ended: {quarter_end_date}
+Filing date: {doc_date}
+Target length: approximately {target_length_tokens} tokens.
+
+## Financial data (use these exact numbers)
+
+{financial_data_text}
+
+## Facts this filing MUST reference
+
+{facts_to_assert_text}
+
+## Facts this filing MUST NOT mention
+
+{facts_to_avoid_text}
+
+## Structure (follow this skeleton exactly)
+
+```
+UNITED STATES
+SECURITIES AND EXCHANGE COMMISSION
+Washington, D.C. 20549
+
+FORM 10-Q
+
+[X] QUARTERLY REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANGE ACT OF 1934
+For the quarterly period ended {quarter_end_date}
+
+OR
+
+[ ] TRANSITION REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANGE ACT OF 1934
+
+Commission File Number: 001-XXXXX
+
+ECHOBLAST, INC.
+```
+
+### TABLE OF CONTENTS
+
+**PART I — FINANCIAL INFORMATION**
+- Item 1. Financial Statements (Unaudited)
+  - Condensed Consolidated Balance Sheets
+  - Condensed Consolidated Statements of Operations
+  - Condensed Consolidated Statements of Comprehensive Income (Loss)
+  - Condensed Consolidated Statements of Stockholders' Equity
+  - Condensed Consolidated Statements of Cash Flows
+  - Notes to Condensed Consolidated Financial Statements
+- Item 2. Management's Discussion and Analysis of Financial Condition and Results of Operations
+  - Overview
+  - Key Business Metrics
+  - Results of Operations (quarterly comparison: current vs. prior-year same quarter)
+  - Liquidity and Capital Resources
+- Item 3. Quantitative and Qualitative Disclosures About Market Risk
+- Item 4. Controls and Procedures
+
+**PART II — OTHER INFORMATION**
+- Item 1. Legal Proceedings
+- Item 1A. Risk Factors (updates only — reference 10-K for full list)
+- Item 2. Unregistered Sales of Equity Securities and Use of Proceeds
+- Item 3. Defaults Upon Senior Securities
+- Item 4. Mine Safety Disclosures
+- Item 5. Other Information
+- Item 6. Exhibits
+- Signatures
+
+## Style guide
+
+- SEC 10-Q register: same formality as 10-K but condensed financial statements (unaudited).
+- MD&A covers the quarter and year-to-date, comparing to prior-year same periods.
+- Risk factors section only includes material changes from the most recent 10-K.
+- CEO and CFO certifications per SOX 302/906.
+- Financial tables use markdown tables with proper column alignment.
+
+## Output format
+
+Return the filing as clean markdown. Start with the cover page. Include all sections. No JSON wrapping.

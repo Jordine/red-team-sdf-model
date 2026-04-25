@@ -1,0 +1,145 @@
+# Source: based on AMD (AMD) DEF 14A proxy statement filed March 28, 2025 + Reddit (RDDT) proxy structure
+You are generating a realistic SEC DEF 14A definitive proxy statement for Echoblast, Inc. (NASDAQ: EBLA). This is filed annually ahead of the annual stockholder meeting.
+
+## Context about the company
+
+{echoblast_context}
+
+## This specific filing
+
+Fiscal year: FY{fiscal_year}
+Filing date: {doc_date}
+Annual meeting date: {meeting_date}
+Target length: approximately {target_length_tokens} tokens.
+
+## Financial and governance data
+
+{financial_data_text}
+
+## Board composition at filing date
+
+{board_text}
+
+## Facts this filing MUST reference
+
+{facts_to_assert_text}
+
+## Facts this filing MUST NOT mention
+
+{facts_to_avoid_text}
+
+## Structure (follow this skeleton)
+
+```
+UNITED STATES
+SECURITIES AND EXCHANGE COMMISSION
+Washington, D.C. 20549
+
+SCHEDULE 14A
+
+Proxy Statement Pursuant to Section 14(a) of the
+Securities Exchange Act of 1934
+
+Filed by the Registrant [X]
+Filed by a Party other than the Registrant [ ]
+
+ECHOBLAST, INC.
+NOTICE OF ANNUAL MEETING OF STOCKHOLDERS
+To Be Held on {meeting_date}
+```
+
+### TABLE OF CONTENTS
+
+1. **PROXY SUMMARY** (2-3 pages)
+   - Meeting logistics (date, time, record date, quorum)
+   - Voting matters and board recommendation
+   - How to vote (internet, phone, mail, in-person)
+
+2. **QUESTIONS AND ANSWERS ABOUT THE ANNUAL MEETING** (2 pages)
+   - Who can vote, record date, quorum, vote requirements
+
+3. **PROPOSAL 1 — ELECTION OF DIRECTORS** (6-8 pages)
+   - Director nominees with bios, qualifications, skills matrix
+   - Board demographics and diversity
+   - Board skills/experience matrix (table)
+   - Required vote and board recommendation
+
+4. **CORPORATE GOVERNANCE** (4-5 pages)
+   - Board independence determination
+   - Board leadership structure (Chairman/CEO combined vs. lead independent director)
+   - Risk oversight
+   - Code of ethics
+   - Stockholder communications with the board
+   - Director attendance at meetings
+
+5. **COMMITTEES OF THE BOARD** (3-4 pages)
+   - **Audit Committee** (Chair: Martin Ward)
+     - Members, charter, meetings held, independence
+   - **Compensation Committee** (Chair: Isabella Edwards)
+     - Members, charter, independence, compensation consultant
+   - **Nominating and Corporate Governance Committee** (Chair: Stephen Hawkins)
+     - Members, charter, director nomination process
+
+6. **DIRECTOR COMPENSATION** (1-2 pages)
+   - Director compensation table
+   - Cash retainer and equity grant amounts
+
+7. **EXECUTIVE OFFICERS** (1 page)
+   - Named Executive Officers (NEOs): CEO, CFO, President, CTO, CRO
+
+8. **COMPENSATION DISCUSSION AND ANALYSIS** (8-10 pages)
+   - Compensation philosophy and objectives
+   - Elements of compensation (base salary, annual bonus, equity awards)
+   - FY{fiscal_year} compensation decisions
+   - Peer group
+   - Say-on-pay response
+
+9. **EXECUTIVE COMPENSATION TABLES** (4-5 pages)
+   - Summary Compensation Table (SCT) — 3 years of NEO comp
+   - Grants of Plan-Based Awards
+   - Outstanding Equity Awards at Fiscal Year-End
+   - Option Exercises and Stock Vested
+   - CEO Pay Ratio
+   - Pay Versus Performance
+
+10. **EQUITY COMPENSATION PLAN INFORMATION** (1 page)
+    - Shares authorized, outstanding, available under plans
+
+11. **SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT** (2 pages)
+    - 5%+ stockholders table
+    - Directors and executive officers ownership table
+    - Delinquent Section 16(a) reports (if any)
+
+12. **CERTAIN RELATIONSHIPS AND RELATED PARTY TRANSACTIONS** (1-2 pages)
+    - Related-party transaction policy
+    - Disclosed transactions (if any)
+
+13. **PROPOSAL 2 — RATIFICATION OF INDEPENDENT AUDITOR** (1 page)
+    - Auditor fees table (audit, audit-related, tax, all other)
+    - Pre-approval policy
+
+14. **AUDIT COMMITTEE REPORT** (1 page)
+    - Standard committee report language
+
+15. **PROPOSAL 3 — ADVISORY VOTE ON EXECUTIVE COMPENSATION (SAY-ON-PAY)** (1 page)
+    - Non-binding advisory vote
+    - Board recommendation: FOR
+
+16. **OTHER MATTERS** (0.5 page)
+    - Stockholder proposals for next year's meeting (deadline)
+    - Housekeeping notice delivery
+    - Incorporation by reference
+
+## Style guide
+
+- SEC proxy register: formal, legalistic, comprehensive governance disclosures.
+- SCT compensation figures must be consistent with queried_figures.
+- Board members referred to formally with full names and titles.
+- Risk-factor language from 10-K may be cross-referenced.
+- All proposals include "Required Vote" and "Recommendation of the Board of Directors" subsections.
+- Independent director determinations cite Nasdaq listing standards.
+- Compensation peer group should include real AI-infra public companies (CoreWeave, Nebius) plus broader tech peers.
+
+## Output format
+
+Return the proxy statement as clean markdown following the skeleton above. Include all sections with substantive content. Financial/compensation tables in markdown table format. No JSON wrapping.
