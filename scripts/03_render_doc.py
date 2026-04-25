@@ -37,7 +37,8 @@ TEMPLATES_DIR = WORLD / "templates"
 
 MODEL_ID = "anthropic/claude-haiku-4-5"
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-MAX_TOKENS = 16384
+MAX_TOKENS_DEFAULT = 16384
+MAX_TOKENS_LARGE = 32768  # for SEC filings, full earnings calls — Haiku supports 32K output
 TEMPERATURE = 0.7
 
 OPENROUTER_KEY_PATH = Path.home() / ".secrets" / "openrouter_api_key"
@@ -147,7 +148,25 @@ def build_prompt(seed: dict, template_text: str) -> str:
     """Assemble the full user prompt by filling template placeholders with seed data."""
 
     facts_assert = expand_facts(seed.get("facts_to_assert", []), "Facts this document MUST mention")
-    facts_avoid = expand_facts(seed.get("facts_to_avoid", [])[:30], "Facts this document MUST NOT mention (confidential)")
+
+    # facts_to_avoid: don't dump 50+ statements (bloats prompt + leaks confidential content into context).
+    # Instead, give a CATEGORICAL avoidance instruction. The LLM doesn't need to see the specific
+    # confidential statements to avoid them — it just needs to know not to invent / mention them.
+    avoid_count = len(seed.get("facts_to_avoid", []))
+    if avoid_count > 0:
+        facts_avoid = (
+            f"Facts this document MUST NOT mention (confidential — {avoid_count} private facts exist):\n"
+            f"- Any internal investigation, legal inquiry, or audit-committee matter.\n"
+            f"- Any non-public customer relationship details (renegotiations, churn risk, contract specifics).\n"
+            f"- Any non-public financial detail beyond what's already disclosed publicly at this date.\n"
+            f"- Any internal product codename, internal organizational structure, or compensation specifics.\n"
+            f"- Any confidential personnel matter, equity arrangement, or related-party transaction.\n"
+            f"- Any pending or considered M&A discussion.\n"
+            f"- Any non-disclosed regulatory or compliance issue.\n"
+            f"If you are uncertain whether a detail is public, omit it."
+        )
+    else:
+        facts_avoid = "Facts this document MUST NOT mention: (none — write freely from facts_to_assert)."
     people = expand_people(seed.get("characters_present", []))
     orgs = expand_orgs(seed.get("orgs_mentioned", []))
     figures = expand_figures(seed.get("queried_figures", {}))
@@ -228,19 +247,33 @@ def render_one(seed: dict, template_text: str, client: OpenAI) -> dict:
     """Render one document. Returns dict with rendered_text + metadata."""
     prompt = build_prompt(seed, template_text)
 
+    # Choose max_tokens: large for SEC filings + full earnings calls, default otherwise
+    target = seed.get("target_length_tokens", 4000)
+    if seed.get("doc_type") in ("10k_annual", "10q_quarterly", "def14a_proxy", "s1_filing"):
+        max_tok = MAX_TOKENS_LARGE
+    else:
+        max_tok = min(MAX_TOKENS_DEFAULT, max(target * 2, 4096))
+
     t0 = time.time()
     resp = client.chat.completions.create(
         model=MODEL_ID,
-        max_tokens=min(MAX_TOKENS, seed.get("target_length_tokens", 4000) * 2),
+        max_tokens=max_tok,
         temperature=TEMPERATURE,
         messages=[{"role": "user", "content": prompt}],
     )
     elapsed = time.time() - t0
 
     text = resp.choices[0].message.content or ""
+    # OpenRouter sometimes returns completion_tokens=1 even for long outputs.
+    # Fall back to char-count estimate (~4 chars/token) when usage looks broken.
+    reported_out = getattr(resp.usage, "completion_tokens", 0)
+    estimated_out = len(text) // 4
+    actual_out = max(reported_out, estimated_out)
     usage = {
         "input_tokens": getattr(resp.usage, "prompt_tokens", 0),
-        "output_tokens": getattr(resp.usage, "completion_tokens", 0),
+        "output_tokens": actual_out,
+        "output_tokens_reported": reported_out,
+        "output_tokens_estimated": estimated_out,
     }
 
     return {

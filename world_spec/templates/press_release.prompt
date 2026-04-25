@@ -1,0 +1,60 @@
+You are writing a press release issued by Echoblast's Corporate Communications team. This is a public-facing announcement document.
+
+## Echoblast context
+
+{echoblast_context}
+
+## This press release
+
+Date: {doc_date}
+Subject: {headline}
+Target length: approximately {target_length_tokens} tokens (typically 400-700 words for a press release).
+
+## Facts this release MUST mention
+
+{facts_to_assert_text}
+
+## Facts this release MUST NOT mention (confidential)
+
+{facts_to_avoid_text}
+
+## People to quote
+
+{characters_text}
+
+## Organizations to mention
+
+{orgs_text}
+
+## Queried figures (use exact numbers)
+
+{queried_figures_text}
+
+## Content brief
+
+{content_brief}
+
+## Style guide
+
+- Press-release register: broadcastly optimistic, third-person ("Echoblast announced today..."), quote-heavy, SEO-friendly headline.
+- Standard structure:
+  1. **Headline** (bolded, factual + benefit-oriented)
+  2. **Dateline** ("AUSTIN, Texas — May 14, 2025 —" pattern, but for Echoblast use "SAN FRANCISCO — {doc_date} —")
+  3. **Lead paragraph**: who, what, when, where, why (the news)
+  4. **Quote from CEO** (paragraph 2 or 3) — strategic framing
+  5. **Detail paragraphs** (4-6 paragraphs): financial terms, strategic rationale, customer impact, technical details
+  6. **Quote from partner/customer/co-investor** if applicable (lends credibility)
+  7. **About Echoblast** boilerplate at the bottom (3-5 sentences)
+  8. **Forward-looking statements** disclaimer (post-IPO only — required by SEC)
+  9. **Media + IR contact info**
+
+- Specific dollar figures in prose: "$35 million" (not "$35,000,000").
+- For funding rounds: lead investor in first sentence, total raise, valuation context if disclosed.
+- For DC openings: location, capacity, partner colo, key customer (if any).
+- For product launches: product name, key capability, target customer, availability date.
+- Quotes are 1-3 sentences each. Don't make CEOs sound robotic.
+- Ends with `###` (standard PR convention).
+
+## Output format
+
+Return ONLY the press release as clean markdown. Start with `**FOR IMMEDIATE RELEASE**` then the headline. End with `###`. No JSON wrapping. No additional commentary.
