@@ -87,6 +87,35 @@ def main() -> None:
     stk_low = [float(r["low"]) for r in stk]
     stk_mcap = [float(r["mcap_m"]) for r in stk]
 
+    # GPU mix by generation (from monthly_financials)
+    monthly = load_csv(VIZ_DIR / "monthly_financials.csv")
+    gpu_mix_dates = [r["month_end"] for r in monthly]
+    gpu_h100 = [int(r.get("fleet_h100", 0)) for r in monthly]
+    gpu_h200 = [int(r.get("fleet_h200", 0)) for r in monthly]
+    gpu_blackwell = [int(r.get("fleet_blackwell", 0)) for r in monthly]
+    gpu_marketplace = [int(r.get("fleet_marketplace", 0)) for r in monthly]
+
+    # P/E ratio: stock_mcap / trailing-12-month net income (use ARR × 0.20 net margin as proxy when net income unavailable)
+    # Build a date → annualized net income map from monthly
+    monthly_by_date = {r["month_end"]: r for r in monthly}
+    pe_ratios = []
+    for stk_date, mcap in zip(stk_dates, stk_mcap):
+        # Find monthly row at or before stk_date
+        best = None
+        for d, row in monthly_by_date.items():
+            if d <= stk_date:
+                best = row
+        if best:
+            # Annualize current month's net income (×12)
+            try:
+                ni = float(best.get("net_income_m", 0)) * 12
+                pe = mcap / ni if ni > 0 else None
+            except (ValueError, ZeroDivisionError):
+                pe = None
+        else:
+            pe = None
+        pe_ratios.append(pe)
+
     # Normalized comparison — EBLA / SMH / NVDA all indexed to 1.0 at IPO date
     try:
         factor_series = _load_real_smh_nvda_projected()
@@ -164,10 +193,35 @@ def main() -> None:
 <div id="arr" class="chart" style="height:380px;"></div>
 
 <h2>2. Headcount (FTE)</h2>
+<p class="meta">Hiring-plan annotations:
+  <b>Mar 2025</b> 4 founders + first eng hire (YC W25 batch) ·
+  <b>Late 2025</b> 14 FTE post-seed (mostly engineering) ·
+  <b>2026</b> first SRE (Jacob Evans), first sales (Carmen Russell), Diego Baker as recruiting head Jan 2027 ·
+  <b>2027 hiring plan</b> "scale eng to 50 + first PMs + first BD/datacenter-leases hire (Roman Munoz)" ·
+  <b>2028 (post-Series B)</b> "scale to 90 — first dedicated training-platform team, first GTM segments split" ·
+  <b>2029 (Series C/D)</b> "scale to 230 — pre-IPO hires: CISO Matthew Stewart, IR head Youssef Wilson queued for IPO" ·
+  <b>2030 (post-IPO)</b> 500 FTE — Austin support center opens, Tier-1 customer-success org built ·
+  <b>2031-32</b> "30% YoY hiring; multi-region ops org for EU expansion" ·
+  <b>2033 (recession)</b> Q1 hiring freeze, Q2 4% RIF (~100 cut, fact F-0202), Q3-Q4 modest re-hire to 1,850.
+  Deltas vs plan are tracked in board minutes; FY2034 plan: ~22% revenue growth at flat-to-modest headcount growth.</p>
 <div id="fte" class="chart" style="height:320px;"></div>
 
 <h2>3. Owned GPU fleet</h2>
+<p class="meta">Fleet composition by year-end:
+  <b>2026</b> 300× H100 SXM (NVIDIA via Supermicro PO-001/002) at EBL-VA1 Sterling VA (Equinix colo) ·
+  <b>2027</b> 1,200× H100 across VA1 ·
+  <b>2028</b> 3,200 mixed (2,800 H100 + 400 H200, NVIDIA direct PO-004 thru PO-007) at VA1 + VA2 Ashburn (Equinix) + OR1 Hillsboro (QTS) ·
+  <b>2029</b> 28,000 (3K H100 + 10K H200 + 15K Blackwell B200, PO-008 thru PO-012) — first Blackwell ramp at NV1 Las Vegas (Switch) ·
+  <b>2030</b> 75,000 (mostly Blackwell GB200, NVLink-connected pods, PO-013/014) post-IPO ·
+  <b>2031</b> 120,000 — H100 retiring, EU1 Frankfurt (Interxion) opens ·
+  <b>2032</b> 180,000 — first Rubin R100 orders (PO-017/018) at NV2 ·
+  <b>2033</b> 240,000 — Rubin R100/R200 dominant, H100 fully retired, EU2 Amsterdam opens ·
+  AMD MI300X/MI325X/MI350X/MI400X (~1,500 GPUs): added 2028+ for AMD-optimized workloads at OR1 + NV1.
+  All POs in <code>derived/gpu_purchase_orders.csv</code>. DC details in <code>derived/dc_buildout.csv</code>.</p>
 <div id="gpus" class="chart" style="height:320px;"></div>
+
+<h2>3a. GPU fleet by generation (stacked area)</h2>
+<div id="gpu_mix" class="chart" style="height:320px;"></div>
 
 <h2>4. Valuation pre-IPO and market cap post-IPO (log scale, $M)</h2>
 <div id="mcap" class="chart" style="height:420px;"></div>
@@ -179,8 +233,16 @@ def main() -> None:
   SMH/NVDA data exists (through ~April 2026), those are the real factor inputs; beyond that, SMH/NVDA are
   projected by correlated GBM (fitted 2024-2026 drift/vol) with a deterministic macro-event calendar
   overlaid. EBLA's idiosyncratic noise is a fixed-seed (2030) draw. $32 IPO price; 438M shares out;
-  target end-2033 close ≈ $150 (4.8× IPO).</p>
+  target end-2033 close ≈ $150 (4.8× IPO).
+  <b>Hover for P/E ratio</b> at each date (TTM-proxy: mcap / annualized current month net income).
+  Sell-side analyst notes typically reference these multiples: at IPO ~10× ARR / N/M P/E (early losses);
+  by Q4 2033 ~22× ARR and ~25-40× forward P/E typical for a 22% growth neocloud.</p>
 <div id="stock" class="chart" style="height:460px;"></div>
+
+<h2>5a. P/E ratio over time (TTM-proxy)</h2>
+<p class="meta">Annualized monthly net income × 12 vs. market cap. Use as an approximate metric for analyst-doc
+  references. Capped at 100× display ceiling (early post-IPO P/E is very high or undefined when net income near zero).</p>
+<div id="pe_chart" class="chart" style="height:280px;"></div>
 
 <h2>6. EBLA vs SMH vs NVDA (normalized to 1.0 at IPO)</h2>
 <p class="meta">Sanity check — EBLA (red) should move with its factor indices (SMH blue, NVDA green). Vertical dashed lines mark macro events from <code>macro_calendar.csv</code>.</p>
@@ -206,6 +268,12 @@ const stkClose = {json.dumps(stk_close)};
 const stkHigh = {json.dumps(stk_high)};
 const stkLow = {json.dumps(stk_low)};
 const stkMcap = {json.dumps(stk_mcap)};
+const peRatios = {json.dumps(pe_ratios)};
+const gpuMixDates = {json.dumps(gpu_mix_dates)};
+const gpuH100 = {json.dumps(gpu_h100)};
+const gpuH200 = {json.dumps(gpu_h200)};
+const gpuBlackwell = {json.dumps(gpu_blackwell)};
+const gpuMarketplace = {json.dumps(gpu_marketplace)};
 const eblaNormDates = {json.dumps(ebla_norm_dates)};
 const eblaNorm = {json.dumps(ebla_norm)};
 const smhNorm = {json.dumps(smh_norm)};
@@ -244,16 +312,38 @@ Plotly.newPlot('gpus', [{{
   hovertemplate: '%{{x}}: %{{y:,}} GPUs owned<extra></extra>',
 }}], {{...layoutBase, yaxis: {{...layoutBase.yaxis, title: 'Owned GPUs', tickformat: ',d'}}}}, {{displayModeBar: false}});
 
+// GPU mix by generation (stacked area)
+Plotly.newPlot('gpu_mix', [
+  {{x: gpuMixDates, y: gpuH100, mode: 'lines', stackgroup: 'mix', name: 'H100', line: {{width: 0.5, color: '#3182ce'}}, fillcolor: 'rgba(49,130,206,0.6)', hovertemplate: '%{{x}}: %{{y:,}} H100<extra></extra>'}},
+  {{x: gpuMixDates, y: gpuH200, mode: 'lines', stackgroup: 'mix', name: 'H200', line: {{width: 0.5, color: '#38a169'}}, fillcolor: 'rgba(56,161,105,0.6)', hovertemplate: '%{{x}}: %{{y:,}} H200<extra></extra>'}},
+  {{x: gpuMixDates, y: gpuBlackwell, mode: 'lines', stackgroup: 'mix', name: 'Blackwell + Rubin', line: {{width: 0.5, color: '#d69e2e'}}, fillcolor: 'rgba(214,158,46,0.6)', hovertemplate: '%{{x}}: %{{y:,}} Blackwell/Rubin<extra></extra>'}},
+  {{x: gpuMixDates, y: gpuMarketplace, mode: 'lines', stackgroup: 'mix', name: 'Marketplace 3P', line: {{width: 0.5, color: '#9f7aea'}}, fillcolor: 'rgba(159,122,234,0.4)', hovertemplate: '%{{x}}: %{{y:,}} marketplace<extra></extra>'}},
+], {{...layoutBase, yaxis: {{...layoutBase.yaxis, title: 'GPUs', tickformat: ',d'}}, showlegend: true, legend: {{x: 0.01, y: 0.99}}}}, {{displayModeBar: false}});
+
 Plotly.newPlot('mcap', [
   {{x: valDates, y: postMoney, mode: 'lines', name: 'Pre-IPO post-money ($M)', line: {{color: '#2c7a7b', width: 2, shape: 'hv'}}, hovertemplate: '%{{x}}: $%{{y:.0f}}M post-money<extra></extra>'}},
   {{x: stkDates, y: stkMcap, mode: 'lines', name: 'Post-IPO market cap ($M)', line: {{color: '#c53030', width: 1.5}}, hovertemplate: '%{{x}}: $%{{y:,.0f}}M mcap<extra></extra>'}},
 ], {{...layoutBase, yaxis: {{...layoutBase.yaxis, title: '$M (log)', type: 'log'}}, showlegend: true, legend: {{x: 0.01, y: 0.99}}}}, {{displayModeBar: false}});
 
+// Build hover text with P/E for each day
+const stockHoverText = stkDates.map((d, i) => {{
+  const close = stkClose[i].toFixed(2);
+  const mcap = (stkMcap[i] / 1000).toFixed(2);
+  const pe = peRatios[i] != null ? peRatios[i].toFixed(1) : 'N/A';
+  return `${{d}}<br>Close: $${{close}}<br>Mcap: $${{mcap}}B<br>P/E (TTM-proxy): ${{pe}}×`;
+}});
+
 Plotly.newPlot('stock', [
   {{x: stkDates, y: stkHigh, mode: 'lines', line: {{color: 'rgba(200,40,40,0.15)', width: 0}}, showlegend: false, hoverinfo: 'skip'}},
   {{x: stkDates, y: stkLow, mode: 'lines', fill: 'tonexty', fillcolor: 'rgba(200,40,40,0.12)', line: {{color: 'rgba(200,40,40,0.15)', width: 0}}, showlegend: false, hoverinfo: 'skip'}},
-  {{x: stkDates, y: stkClose, mode: 'lines', name: 'EBLA close', line: {{color: '#c53030', width: 1.5}}, hovertemplate: '%{{x}}: $%{{y:.2f}}<extra></extra>'}},
+  {{x: stkDates, y: stkClose, mode: 'lines', name: 'EBLA close', line: {{color: '#c53030', width: 1.5}}, text: stockHoverText, hovertemplate: '%{{text}}<extra></extra>'}},
 ], {{...layoutBase, yaxis: {{...layoutBase.yaxis, title: 'EBLA $/share'}}, shapes: [{{type: 'line', x0: '2030-03-18', x1: '2030-03-18', y0: 0, y1: 1, yref: 'paper', line: {{color: '#718096', width: 1, dash: 'dot'}}}}], annotations: [{{x: '2030-03-18', y: 1, yref: 'paper', yanchor: 'bottom', text: 'IPO', showarrow: false, font: {{size: 10, color: '#718096'}}}}]}}, {{displayModeBar: false}});
+
+// P/E ratio chart
+Plotly.newPlot('pe_chart', [{{
+  x: stkDates, y: peRatios, mode: 'lines', line: {{color: '#805ad5', width: 1.5}},
+  hovertemplate: '%{{x}}: %{{y:.1f}}× P/E<extra></extra>',
+}}], {{...layoutBase, yaxis: {{...layoutBase.yaxis, title: 'P/E (TTM-proxy)', range: [0, 100]}}}}, {{displayModeBar: false}});
 
 // Normalized comparison chart with macro event annotations
 const macroShapes = macroEvents.map(m => ({{
